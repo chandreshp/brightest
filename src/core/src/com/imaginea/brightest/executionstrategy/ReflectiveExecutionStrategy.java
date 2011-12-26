@@ -17,7 +17,8 @@ import com.thoughtworks.selenium.SeleniumException;
  */
 public class ReflectiveExecutionStrategy extends AbstractExecutionStrategy {
     private static final Log LOG = LogFactory.getLog(ReflectiveExecutionStrategy.class);
-
+    private Selenium selenium= null;
+    
     @Override
     public void execute(Command command) {
         if (LOG.isDebugEnabled()) {
@@ -75,6 +76,18 @@ public class ReflectiveExecutionStrategy extends AbstractExecutionStrategy {
      * @return
      */
     private Selenium getSelenium() {
-        return ExecutionContext.getInstance().getSelenium();
+        if(this.selenium==null){
+        	return ExecutionContext.getInstance().getSelenium();	
+        }else{
+        	return this.selenium;
+        }
+    	
     }
+
+	@Override
+	public void execute(Command command, Selenium selenium) {
+		this.selenium=selenium;
+		execute(command);
+		
+	}
 }

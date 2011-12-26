@@ -59,6 +59,10 @@ public final class ExecutionContext {
     public static ExecutionContext getInstance() {
         return INSTANCE;
     }
+    
+    public static ExecutionContext getNonStaticInstance() {
+        return new ExecutionContext();
+    }
 
     protected ExecutionContext() {
         preferences = new ApplicationPreferences();

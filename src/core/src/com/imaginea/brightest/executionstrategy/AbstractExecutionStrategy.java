@@ -26,6 +26,8 @@ package com.imaginea.brightest.executionstrategy;
 
 import com.imaginea.brightest.ApplicationPreferences;
 import com.imaginea.brightest.Command;
+import com.imaginea.brightest.ExecutionContext;
+import com.thoughtworks.selenium.Selenium;
 
 /**
  * Base class for execution strategy.
@@ -40,7 +42,12 @@ public abstract class AbstractExecutionStrategy implements ExecutionStrategy {
     public void execute(Command command) {
         throw new UnsupportedOperationException();
     }
-
+    
+    @Override
+    public void execute(Command command,Selenium selenium){
+    	execute(command);
+    }
+    
     @Override
     public boolean appliesTo(Command command) {
         throw new UnsupportedOperationException();

@@ -31,6 +31,7 @@ import org.junit.Test;
 
 import com.imaginea.brightest.format.FormatHandler;
 import com.imaginea.brightest.format.UnknownFormatException;
+import com.imaginea.brightest.test.CommandBasedTest;
 
 public class TestManagerTest {
     /**
@@ -79,5 +80,11 @@ public class TestManagerTest {
             Assert.assertEquals(this.fileName, fileName);
             return dummyTestSuite;
         }
+
+		@Override
+		protected CommandBasedTest loadDriverTest(String fileName) {
+			// TODO Auto-generated method stub
+			return null;
+		}
     }
 }

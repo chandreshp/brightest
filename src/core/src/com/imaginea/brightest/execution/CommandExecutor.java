@@ -38,6 +38,7 @@ import com.imaginea.brightest.executionstrategy.DynamicCommandExecutionStrategy;
 import com.imaginea.brightest.executionstrategy.ExecutionStrategy;
 import com.imaginea.brightest.executionstrategy.ReflectiveExecutionStrategy;
 import com.imaginea.brightest.executionstrategy.StaticCommandExecutionStrategy;
+import com.thoughtworks.selenium.Selenium;
 
 /**
  * Responsible for running commands. Depends on selenium.
@@ -63,6 +64,18 @@ public class CommandExecutor implements PreferenceListener {
                 LOG.info("Running " + command + " with " + strategy);
                 command.prepare(ExecutionContext.getInstance());
                 strategy.execute(command);
+                break;
+            }
+            
+        }
+        
+    }
+    public void execute(Command command,Selenium selenium) {
+        for (ExecutionStrategy strategy : executionStrategies) {
+            if (strategy.appliesTo(command)) {
+                LOG.info("Running " + command + " with " + strategy);
+                command.prepare(ExecutionContext.getInstance());
+                strategy.execute(command,selenium);
                 break;
             }
         }

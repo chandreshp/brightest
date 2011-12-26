@@ -18,7 +18,8 @@
 
     <property name="client.classes.dir" value="${staging.client.dir}/classes"/>
     <property name="core.classes.dir" value="${staging.core.dir}/classes"/>
-
+	<property name="REPORT" value="${basedir}/test-report" />
+	
     <target name="init">
       <tstamp>
         <format property="TODAY" pattern="d-MMMM-yyyy" />
@@ -52,7 +53,7 @@
             <manifest>
             	<attribute name="Implementation-Version" value="${build.version} ${TODAY}"/> 
                 <attribute name="Main-Class" value="com.imaginea.brightest.util.HeadlessRunner"/>
-                <attribute name="Class-Path" value="../lib/poi-3.2.jar ../lib/selenium-java-client-driver.jar ../lib/selenium-server.jar"/>
+                <attribute name="Class-Path" value="${lib.dir}"/>
              </manifest>
 
             <fileset dir="${core.classes.dir}">
@@ -96,6 +97,7 @@
 			<path refid="compile.class.path" />
 			<path location="${staging.dir}/${core.jar}" />
 			<path location="${core.resources.dir}" />
+			<path location="{lib.dir}" />
 		</path>
 	</target>
 	
@@ -141,5 +143,13 @@
 		<delete dir="${staging.dir}" />
         <ant inheritAll="false" antfile="${plugin.build.dir}/build.xml" target="clean" />
 	</target>
-
+	<taskdef resource="testngtasks" classpath="${lib.dir}/testng-6.3.1.jar" />
+	<target name="ng-test" depends="make-core, run-setup">
+			<delete dir="${REPORT}" />
+			<mkdir dir="${REPORT}" />
+			<mkdir dir="${REPORT}/TestNG-report" />
+			<testng outputdir="${REPORT}/TestNG-report" classpathref="run.class.path">
+				<xmlfileset dir="${basedir}" includes="testng.xml" />
+			</testng>
+		</target>
 </project>

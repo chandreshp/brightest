@@ -1,5 +1,7 @@
 package com.imaginea.brightest.format;
 
+import com.imaginea.brightest.test.CommandBasedTest;
+
 import junit.framework.TestSuite;
 
 /**
@@ -18,4 +20,11 @@ public abstract class FormatHandler {
     protected abstract boolean understands(String fileName);
 
     protected abstract TestSuite loadSuiteInternal(String fileName);
+    public CommandBasedTest loadDriverTestFile(String fileName){
+    	if (understands(fileName)) {
+            return loadDriverTest(fileName);
+        }
+        return null;
+    }
+    protected abstract CommandBasedTest loadDriverTest(String fileName);
 }

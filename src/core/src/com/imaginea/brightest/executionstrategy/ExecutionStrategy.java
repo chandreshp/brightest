@@ -25,7 +25,9 @@
 package com.imaginea.brightest.executionstrategy;
 
 import com.imaginea.brightest.Command;
+import com.imaginea.brightest.ExecutionContext;
 import com.imaginea.brightest.execution.PreferenceListener;
+import com.thoughtworks.selenium.Selenium;
 
 /**
  * Strategy for executing commands. We can ask a strategy if it applies to a command. We can also ask a strategy to
@@ -40,6 +42,8 @@ public interface ExecutionStrategy extends PreferenceListener {
      * @param command
      */
     public void execute(Command command);
+    
+    public void execute(Command command,Selenium selenium);
 
     /**
      * @param command

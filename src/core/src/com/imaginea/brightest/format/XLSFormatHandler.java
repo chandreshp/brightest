@@ -40,6 +40,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import com.imaginea.brightest.Command;
 import com.imaginea.brightest.test.BrightestTestSuite;
+import com.imaginea.brightest.test.CommandBasedTest;
 import com.imaginea.brightest.test.CommandBasedTestCase;
 
 /**
@@ -299,4 +300,10 @@ public class XLSFormatHandler extends FormatHandler {
             super("Test case at rownum [" + rowNum + "] refers to unknown sheet name [" + sheetName + "]");
         }
     }
+
+	@Override
+	public CommandBasedTest loadDriverTest(String fileName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

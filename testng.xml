@@ -1,0 +1,18 @@
+<suite name="Android automation framework" verbose="3"
+	thread-count="1" parallel="tests">
+	<test name="Android automation framework - 1">
+	<parameter name="browser"  value="firefox"/>
+		<packages>
+			<package name="testcases.test.*" />
+		</packages>
+
+	</test>
+	<test name="Android automation framework - 2">
+		<parameter name="browser"  value="chrome"/>
+		<packages>
+			<package name="testcases.test.*" />
+		</packages>
+
+	</test>
+
+</suite>
