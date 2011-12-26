@@ -1,0 +1,4 @@
+			<td>
+			<table style='font-family: Tahoma;font-size:14px;height: 300; width: 600px; align:center;' id='myScrollTable2' cellspacing='1' width='700'>	<thead>
+			<tr>			<th>Step</th>			<th>Description</th>			<th>Selenium Command</th>			<th>Status</th>
+			<th>Message</th>	<th>Time Elapsed</th>	</tr>	</thead>	<tbody style='overflow-y: scroll; height: 200px;'>

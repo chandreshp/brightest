@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+ 
+<?xml-stylesheet href="toolbar.css" type="text/css"?>
+ 
+<!DOCTYPE prefwindow SYSTEM "chrome://preflight/locale/ui.dtd">
+ 
+<overlay id="tools-menu-overlay" title="Ultimate tool" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script type="application/x-javascript" src="chrome://brightest-ide-extensions/content/tools-menu/tools-menu.js"/>
+
+  <!--Adding commands to commandSet-->
+  <commandset id="seleniumIDECommands">
+    <command id="cmd_export_results" oncommand="goDoCommand('cmd_export_results')"/>
+  </commandset>
+  
+  <menu id="toolsMenu" label="Tools" accesskey="X">
+    <menupopup id="toolsMenuPopup">
+	    <menuitem label="Export Results" command="cmd_export_results"/>
+		<menupopup id="popup_export_formats" onpopupshowing="window.editor.populateFormatsPopup(this)" oncommand="window.editor.exportTestCaseWithFormat(window.editor.app.getFormats().selectFormat(event.target.getAttribute('value')))">
+		</menupopup>
+    </menupopup>
+  </menu>
+  
+  <menubar id="menubar">
+    <menu id="toolsMenu" insertafter="menu_edit"/>
+  </menubar>
+
+</overlay>

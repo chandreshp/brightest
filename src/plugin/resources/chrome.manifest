@@ -1,0 +1,39 @@
+# chrome.manifest to be used when packaged into xpi archive
+content	selenium-ide	jar:chrome/selenium-ide.jar!/content/ xpcnativewrappers=yes
+content selenium-ide-platform jar:chrome/selenium-ide.jar!/content/ platform
+content	selenium-ide-testrunner	jar:chrome/selenium-ide.jar!/content/ xpcnativewrappers=no
+
+content	brightest-ide-extensions	jar:chrome/brightest-ide-extensions.jar!/extensions/ xpcnativewrappers=yes
+
+#interfaces components/SeleniumIDEGenericAutoCompleteSearch.xpt
+# The {classID} here must match the classID in mycomponent.js
+#component {E5226A0D-4698-4E15-9D6D-86771AE172C9} components/SeleniumIDEGenericAutoCompleteSearch.js
+#contract @brightest/seleniumIDEGenericAutoCompleteSearch;1 {E5226A0D-4698-4E15-9D6D-86771AE172C9}
+#category profile-after-change SeleniumIDEGenericAutoCompleteSearch @brightest/seleniumIDEGenericAutoCompleteSearch;1
+interfaces components/SeleniumIDEGenericAutoCompleteSearch.xpt
+component {E5226A0D-4698-4E15-9D6D-86771AE172C9} components/SeleniumIDEGenericAutoCompleteSearch.js
+contract @mozilla.org/autocomplete/search;1?name=selenium-ide-generic {E5226A0D-4698-4E15-9D6D-86771AE172C9}
+
+overlay	chrome://browser/content/browser.xul	chrome://brightest-ide-extensions/content/core/brightest-ide-overlay.xul
+
+overlay	chrome://selenium-ide/content/selenium-ide-sidebar.xul 	chrome://brightest-ide-extensions/content/core/core-overlay.xul
+overlay	chrome://selenium-ide/content/selenium-ide.xul 	chrome://brightest-ide-extensions/content/core/core-overlay.xul
+
+overlay	chrome://selenium-ide/content/selenium-ide-sidebar.xul 	chrome://brightest-ide-extensions/content/tools-menu/tools-menu-overlay.xul
+overlay	chrome://selenium-ide/content/selenium-ide.xul 	chrome://brightest-ide-extensions/content/tools-menu/tools-menu-overlay.xul
+
+overlay	chrome://selenium-ide/content/selenium-ide-sidebar.xul 	chrome://brightest-ide-extensions/content/toolbar/toolbar-overlay.xul
+overlay	chrome://selenium-ide/content/selenium-ide.xul 	chrome://brightest-ide-extensions/content/toolbar/toolbar-overlay.xul
+
+overlay	chrome://selenium-ide/content/selenium-ide-sidebar.xul 	chrome://brightest-ide-extensions/content/testcase-properties-dialog/dialog-call-overlay.xul
+overlay	chrome://selenium-ide/content/selenium-ide.xul 	chrome://brightest-ide-extensions/content/testcase-properties-dialog/dialog-call-overlay.xul
+
+overlay	chrome://selenium-ide/content/optionsDialog.xul 	chrome://brightest-ide-extensions/content/core/options-dialog-overlay.xul
+overlay	chrome://selenium-ide/content/format-source-dialog.xul 	chrome://brightest-ide-extensions/content/core/format-source-dialog-overlay.xul
+
+locale selenium-ide en-US jar:chrome/selenium-ide.jar!/locale/en-US/
+locale selenium-ide fr-FR jar:chrome/selenium-ide.jar!/locale/fr-FR/
+locale selenium-ide ja-JP jar:chrome/selenium-ide.jar!/locale/ja-JP/
+locale selenium-ide pt-BR jar:chrome/selenium-ide.jar!/locale/pt-BR/
+skin selenium-ide classic/1.0 jar:chrome/selenium-ide.jar!/skin/classic/
+skin selenium-ide-platform classic/1.0 jar:chrome/selenium-ide.jar!/skin/classic/platforms/ appversion>=3.0

@@ -1,0 +1,7 @@
+Firefox plugin for Brightest
+
+folders
+resources -> contains resources specific to our customizations
+selenium-resources -> contains files for selenium
+src-> contains java files used for customizations
+

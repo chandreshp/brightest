@@ -1,0 +1,175 @@
+<project name="brightest" default="make-xpi-dev" xmlns:ac="antlib:net.sf.antcontrib" xmlns:jsl="antlib:com.googlecode.jslint4java">
+
+	<property name="xpi.jar" value="brightest.xpi"/>
+	<property name="app.jar" value="test-runner.jar"/>
+	<property name="src.dir" value="${basedir}/src"/>
+	<property name="selenium.dir" value="${basedir}/selenium-resources"/>
+    
+	<property name="bt.java.dir" value="${basedir}/../core" />
+	<property name="bt.src.dir" value="${bt.java.dir}/src" />
+	<property name="bt.lib.dir" value="${basedir}/../../lib" />
+
+	
+    <property name="lib.dir" value="${bt.lib.dir}"/>
+	<property name="staging.dir" value="${basedir}/dist"/>
+    <property name="classes.dir" value="${staging.dir}/classes"/>
+	
+    <property name="xpi.dir" value="${staging.dir}/xpi"/>
+    <property name="xpi.chrome.dir" value="${xpi.dir}/chrome"/>
+    <property name="xpi.components.dir" value="${xpi.dir}/components"/>
+    <property name="xpi.content.files.dir" value="${xpi.dir}/content-files"/>
+    <property name="xpi.java.dir" value="${xpi.dir}/java"/>
+    
+    <property name="plugins.dir" value="${basedir}/resources/plugins"/>
+	
+	<property name="src.resources.dir" value="${basedir}/resources"/>
+
+    <taskdef uri="antlib:net.sf.antcontrib" 
+         resource="net/sf/antcontrib/antlib.xml" 
+         classpath="lib/ant/ant-contrib.jar"/> 
+
+    <taskdef uri="antlib:com.googlecode.jslint4java"
+           resource="com/googlecode/jslint4java/antlib.xml"
+           classpath="lib/ant/jslint4java.jar" />
+    
+    <target name="jslint-code" description="Runs jslint on the code">
+      <jsl:jslint haltOnFailure="true" options="es5,evil,fragment,forin,continue">
+        <formatter type="plain" destfile="${basedir}/jslint.out" />
+        <fileset dir="${basedir}" includes="**/*.js" excludes="selenium-resources/**,lib/**,dist/**,staging/**,src/**,**/SeleniumIDEGenericAutoCompleteSearch.js" />
+      </jsl:jslint>
+    </target>
+    
+    <target name="init">
+    	<mkdir dir="${staging.dir}"/>
+        <path id="compile.class.path">
+     	    <fileset dir="${lib.dir}">
+    	        <include name="**/*.jar"/>
+            </fileset>
+        </path>
+
+    </target>
+
+    <!-- compile -->
+    <target name="compile" depends="init">
+    	<mkdir dir="${classes.dir}"/>
+        <javac srcdir="${bt.src.dir}" destdir="${classes.dir}" classpathref="compile.class.path" nowarn="yes" debug="yes">
+            <!-- <compilerarg value="-Xlint:unchecked"/> -->
+        </javac>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="compile.class.path" nowarn="yes" debug="yes">
+            <!-- <compilerarg value="-Xlint:unchecked"/> -->
+        </javac>
+    </target>
+    
+    <!-- jar -->
+    <target name="jar" depends="compile">
+        <jar jarfile="${staging.dir}/${app.jar}">
+            <fileset dir="${classes.dir}">
+                <include name="**/*.class"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="selenium-jar" depends="init">
+        <jar jarfile="${staging.dir}/selenium-ide.jar">
+            <fileset dir="${selenium.dir}">
+                <include name="**/*.*"/>
+            </fileset>
+        </jar>
+    </target>
+    
+    <target name="brightest-ide-jar" depends="init">
+        <jar jarfile="${staging.dir}/brightest-ide-extensions.jar">
+            <fileset dir="${src.resources.dir}">
+                <include name="extensions/**"/>
+            </fileset>
+        </jar>
+    </target>
+    
+    <target name="make-plugin-xpis-dev" description="Builds the XPIs of all associated plugins for development">
+        <ac:for param="dir">
+            <path>
+            <dirset dir="${plugins.dir}" includes="*"/>
+            </path>
+            <sequential>
+            <ac:propertyregex property="dirname" input="@{dir}" 
+                    regexp=".*[\\\/](.*)$" 
+                    select="\1" 
+                    defaultvalue="Error" 
+                    override="true"/> 
+            <echo message="Building plugin '${dirname}'"/>
+
+            <mkdir dir="${staging.dir}/${dirname}-xpi"/>
+            <mkdir dir="${staging.dir}/${dirname}-xpi/chrome"/>
+
+            <jar jarfile="${staging.dir}/${dirname}-xpi/chrome/${dirname}.jar">
+                <fileset dir="@{dir}/resources">
+                    <include name="**/*.*"/>
+                </fileset>
+            </jar>
+
+            <copy todir="${staging.dir}/${dirname}-xpi">
+                <fileset dir="@{dir}">
+                    <include name="chrome.manifest"/>
+                    <include name="install.rdf"/>
+                </fileset>
+            </copy>
+            </sequential>
+        </ac:for>
+    </target>
+    
+    <target name="make-plugin-xpis" description="Builds the XPIs of all associated plugins" depends="make-plugin-xpis-dev">
+        <ac:for param="dir">
+            <path>
+            <dirset dir="${plugins.dir}" includes="*"/>
+            </path>
+            <sequential>
+                <jar jarfile="${staging.dir}/${dirname}.xpi">
+                    <fileset dir="${staging.dir}/${dirname}-xpi">
+                        <include name="**/*.*"/>
+                    </fileset>
+                </jar>
+            </sequential>
+        </ac:for>
+    </target>
+
+    <target name="make-xpi-dev" depends="makexpi-struct, make-plugin-xpis-dev" description="Builds the xpi for development">
+    </target>
+
+    <target name="makexpi-struct" depends="init, jar, selenium-jar, brightest-ide-jar">
+    	<mkdir dir="${xpi.dir}"/>
+    	<mkdir dir="${xpi.chrome.dir}"/>
+		<copy todir="${xpi.dir}">
+            <fileset dir="${src.resources.dir}">
+                <include name="**/*.*"/>
+                <exclude name="content/*.*"/>
+            </fileset>
+		</copy>    	
+		<copy todir="${xpi.chrome.dir}">
+            <fileset dir="${staging.dir}">
+                <include name="*.jar"/>
+            </fileset>
+		</copy>    	
+		<copy todir="${xpi.java.dir}">
+            <fileset dir="${staging.dir}">
+                <include name="${app.jar}"/>
+            </fileset>
+            <fileset dir="${lib.dir}">
+                <include name="**/junit-4.8.2.jar"/>
+            </fileset>
+		</copy>    	
+    </target>
+
+    <target name="make-xpi-release" depends="makexpi-struct,make-plugin-xpis" description="Builds the xpi for deployment">
+    	<jar jarfile="${staging.dir}/${xpi.jar}">
+            <fileset dir="${xpi.dir}">
+                <include name="**/*.*"/>
+            </fileset>
+    	</jar>
+    </target>
+
+	<target name="clean" description="Cleans up all the staging resources">
+		<delete dir="${staging.dir}" />
+	</target>
+    
+
+</project>

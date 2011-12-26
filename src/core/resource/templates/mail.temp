@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html> 
+    <head> 
+        <title>BrighTest Report</title> 
+</head>    
+    <body>  
+	<style>
+		table.jtrac th, table.jtrac td, table.jtrac td.label td{ background: #CCCCCC; padding-left: 0.2em; font-weight=bold; padding-right: 0.2em; }
+		tr.center td { text-align: center; }
+		</style>
+		
+			<div style = "margin-bottom:3.5em; margin-top:3.5em;margin-left:3.5em; float:left;width:50%; border:1px solid silver"> 
+			<div style = ""> 
+				<div style = "background-color:#76be57;">
+					<img height="66" alt="BrighTest" width="189" class="logo" src="http://192.168.2.152/logo.png" border="0"> 
+				</div>
+            <table width="100%" class="jtrac"> 
+                <tr> 
+                    <th rowspan="2" >Browser</th> 
+                    <th  rowspan="2" >Total</th> 
+                    <th  rowspan="2" >Pass</th>                    
+                    <th colspan="4" >Fail</th> 
+                </tr>
+                <tr>
+                  <td >Time Out</td>
+                  <td >Element Not Found</td>
+                  <td >Verification Errors</td>
+				   <td  >Other Errors</td>
+                </tr>
+                <tr class = "nav-table">
+                  <td style="background:#E1ECFE;">@browser</td>
+				  <td style="background:#E1ECFE;" >@total</td>
+                  <td style="background:#E1ECFE;" >@pass</td>
+                  
+                  <td style="background:#E1ECFE;">@time</td>
+                  <td style="background:#E1ECFE;">@elementNot</td>
+                  <td style="background:#E1ECFE;">@varification</td>
+                  <td style="background:#E1ECFE;">@other</td>
+                </tr>
+        </table>  
+		</div> 
+	</div>
+	<div Style = " clear: both"/>
+
+		<h4> Test was run by @user on @system </h4>
+
+    </body> 
+</html> 

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<RDF:RDF xmlns:em="http://www.mozilla.org/2004/em-rdf#"
+         xmlns:NC="http://home.netscape.com/NC-rdf#"
+         xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <RDF:Description RDF:about="urn:mozilla:install-manifest"
+                   em:name="BrighTest-Recorder-Analyze-Tests"
+                   em:id="brighTestAnalyzeTests@imaginea.com"
+                   em:version="0.5"
+                   em:description="Analyze Tests on BrighTest"
+                   em:creator="Imaginea"
+                   em:homepageURL="http://www.imaginea.com"
+                   em:unpack="true"
+                    >
+    <em:targetApplication RDF:resource="rdf:#$8MZop3"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="rdf:#$8MZop3"
+                   em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
+                   em:minVersion="1.5"
+                   em:maxVersion="5.*" />
+</RDF:RDF>
+

@@ -1,0 +1,256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head><title>BrighTest Report</title>
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<head>
+		<style>
+			test{
+				text-align: center;
+				font-size: 12px;
+				font-family: verdana;
+				background: #c0c0c0;
+				table-align: center;
+			}
+
+			thead  {
+				cursor: pointer;
+			}
+			table thead tr,
+			table tfoot tr {
+				background: #c0c0c0;
+			}
+			table tbody tr {
+				background: #f0f0f0;
+			}
+			td, th {
+				border: 1px solid white;
+			}
+			:focus {
+			outline-color:-moz-use-text-color;
+			outline-style:none;
+			outline-width:0;
+			}
+			a, a:visited {
+			color:none;
+			text-decoration:none;
+			}
+			
+			a:hover {
+			text-decoration:none;
+			}
+			
+			h1, h2, h3, h4, h5, h6 {
+			font-size:1em;
+			}
+			img {
+			border:0 none;
+			vertical-align:bottom;
+			}
+		</style>		
+	<script type="text/javascript">		
+		function showResult(searchClass,node,tag) {
+			
+			if ( node == null )
+				node = document;
+			if ( tag == null )
+				tag = '*';
+			var els = node.getElementsByTagName(tag);
+			document.getElementById('resultDiv').style.display = "";
+			var elsLen = els.length;
+			var tpattern = new RegExp('Test');
+			var pattern = new RegExp(searchClass);
+			var head = document.getElementById('tableHeader');
+			var resultClass;
+			if ( pattern.test('Test') ){
+				head.innerHTML="All Test cases";	
+				
+			}
+			else if (pattern.test('timeOutTestFailed')){
+				head.innerHTML="Failed Test due to Time OUT";
+			}
+			else if(pattern.test('elementErrorTestFailed')){
+				head.innerHTML="Failed Test due to Element Not Found";
+			}
+			else if(pattern.test('verifyErrorTestFailed')){
+				head.innerHTML="Failed Test due to Verificatoin Errors";
+			}
+			else if(pattern.test('otherErrorTestFailed')){
+				head.innerHTML="Failed Test due to other Errors";
+			}	
+			else if(pattern.test('Failed')){
+				head.innerHTML="Failed Test Cases";
+			}
+			else if(pattern.test('passTest')){
+				head.innerHTML="Pass Test";;
+			}	
+			for (i = 0, j = 1; i < elsLen; i++) {
+				if ( tpattern.test(els[i].className) ) {
+					if ( pattern.test(els[i].className) ) {					
+					els[i].style.display = "";
+					var y=els[i].cells
+					y[0].innerHTML= j++;
+					}
+					else{
+					els[i].style.display = "none";
+					}
+				}				
+			}			
+			
+		}
+			function hideDiv(id)
+			{
+				if (!document.getElementById) {	return;	}
+				var el = document.getElementById(id);
+				if (el.style.display == '')
+				{
+					el.style.display = 'none';
+				}
+				else
+				{
+				el.style.display = '';
+				}
+			}
+			function showSummary()
+			{
+				// Total
+				if(getElementsByClassName('Test').length >= 1)
+					document.getElementById('total').innerHTML = 
+						' <a href=' + '"' + 
+						'javascript:showResult(\'Test\')' 
+						+ '"' + '>' + getElementsByClassName('Test').length + '</a> ' ;
+				else
+					document.getElementById('total').innerHTML ='0' 
+				// pass
+				if(getElementsByClassName('pass').length >= 1)
+					document.getElementById('pass').innerHTML = 
+						' <a href=' + '"' + 
+						'javascript:showResult(\'passTest\')' 
+						+ '"' + '>' + getElementsByClassName('passTest').length + '</a> ' ;	
+				else
+					document.getElementById('pass').innerHTML =' 0 '
+
+				// timeOut
+				if(getElementsByClassName('timeOut').length >= 1)
+					document.getElementById('timeOut').innerHTML = 
+						' <a href=' + '"' + 
+						'javascript:showResult(\'timeOutTest\')' 
+						+ '"' + '>' + getElementsByClassName('timeOutTest').length + '</a> ' ;	
+				else
+					document.getElementById('timeOut').innerHTML =' 0 '
+				// Element Not Found
+				if(getElementsByClassName('element').length >= 1)
+					document.getElementById('element').innerHTML = 
+						' <a href=' + '"' + 
+						'javascript:showResult(\'elementErrorTest\')' 
+						+ '"' + '>' + getElementsByClassName('elementErrorTest').length + '</a> ' ;	
+				else
+					document.getElementById('element').innerHTML =' 0 '
+				// Verification Errors
+				if(getElementsByClassName('verify').length >= 1)
+					document.getElementById('verification').innerHTML = 
+						' <a href=' + '"' + 
+						'javascript:showResult(\'verifyErrorTest\')' 
+						+ '"' + '>' + getElementsByClassName('verifyErrorTest').length + '</a> ' ;	
+				else
+					document.getElementById('verification').innerHTML =' 0 '
+				// Other Errors
+				if(getElementsByClassName('other').length >= 1)
+					document.getElementById('other').innerHTML = 
+						' <a href=' + '"' + 
+						'javascript:showResult(\'otherErrorTest\')' 
+						+ '"' + '>' + getElementsByClassName('otherErrorTest').length + '</a> ' ;	
+				else
+					document.getElementById('other').innerHTML =' 0 '
+				
+				document.getElementById('testSummary').style.display = '';
+				document.getElementById('throbber').style.display = 'none';
+				document.getElementById('throbber').style.display = 'none';
+				if(!document.getElementById('testCompleted')){					
+					document.getElementById('throbber').style.display = '';
+					setTimeout("location.reload(true);",30000);
+				}
+				
+			}
+			
+			function getElementsByClassName(classname, node)  {
+				if(!node) node = document.getElementsByTagName("body")[0];
+				var a = [];
+				var re = new RegExp(classname);
+				var els = node.getElementsByTagName("*");
+				for(var i=0,j=els.length; i<j; i++)
+					if(re.test(els[i].className))a.push(els[i]);
+				return a;
+			}
+			
+		</script>
+	
+	</head>
+	<body onload=" javascript:showSummary()" >
+	<div id="loading">
+		<span id='loading' style='position:absolute; text-align: center; top:10px; right: 10px;'><img border='0' src=./images/loader.gif'/></span>
+	</div>
+	<div id='mainDiv' style = "border: 1px solid silver; align: center; margin-left:300px; margin-top:100px; overflow: hidden; width: 700px; align:right;"> 
+
+		<div style = "background-color:#76be57;">
+				<img height="66" alt="BrighTest" width="189" class="logo" src="../logo.png" border="0"> 
+		</div>
+		<div id = 'throbber' style = "display:none;font-size: 16px;  margin-left:280px;height:42; width :20; align:center "> 
+			<table style="background:white">
+				<tr style="background-color:white">
+					<td><p> Testing in Process...</p></td>
+					<td><img  height="11" alt="Loading..." width="16" class="logo" src="../loader.gif" border="0"> </td>
+			</tr>
+			</table>
+		</div>
+		<div id="testSummary" style="display:none;" >
+            <table  style="text-align: center;font-family: Tahoma;font-size:16px;background: #ffffff; ;height: 100; align:right; width: 700px; align:center;" id="testSummary" cellspacing="1" > 
+                <thead>
+				<tr> 
+                    <th rowspan="2" >Browser</th> 
+                    <th  rowspan="2" >Total</th> 
+                    <th  rowspan="2" >Pass</th>                    
+                    <th id ="fail" colspan="4"  >Fail</th> 
+                </tr>
+				
+                <tr>
+                  <td >Time Out</td>
+                  <td >Element Not Found</td>
+                  <td >Verification Errors</td>
+				   <td  >Other Errors</td>
+                </tr>
+				</thead>
+                <tr class = "nav-table">
+                  <td id="Browser" style="background:#E1ECFE;">browser</td>
+				  <td id="total" style="background:#E1ECFE;" > Total ( <a href="javascript:showResult('Test')">1</a> )</a></td>
+                  <td id="pass" style="background:#E1ECFE;" >0</td>                  
+                  <td id="timeOut" style="background:#E1ECFE;">0</td>
+                  <td id= "element" style="background:#E1ECFE;">0</td>
+				  <td id="verification"  style="background:#E1ECFE;"><a href="javascript:showResult('verifyErrorTest')">1</a></td>
+				  <td id="other" style="background:#E1ECFE;">0</td>
+                </tr>
+        </table>  
+		</div> 
+	</div>
+	<div Style = " clear: both"/>
+
+<div Style = " clear: both"/>
+
+<div id="resultDiv" style="display :block;margin-top:100px; margin-right:auto;margin-left:40px;overflow: hidden; height: 300; width: 700; align:right;">
+
+<table class='sortable' id ='resultTable' align = "center" style="display: block; border: 1px solid silver;font-family: Tahoma;font-size:16px;background: #ffffff; ;height: 100; align:right; width: 700px; align:center;"  cellspacing="1" width="700">
+
+	<thead>
+			<tr style = "background-color:#76be57;">
+			<th id='tableHeader' colspan="5" style = "color:white;"></th>
+
+		<tr>
+			<th WIDTH="16%">Serial No.</th>
+			<th WIDTH="14%" >Test ID</th>
+			<th>Description</th>
+			<th>Expected Result</th>
+			<th WIDTH="12%">Status</th>
+			<th WIDTH="14%">Time Elapsed</th>
+		
+		</tr>
+	</thead>
+    
+    

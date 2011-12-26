@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Analysis Resutls</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+        body {
+            margin-left : 5%;
+            margin-right : 5%;
+            font-size : 0.8em;
+            /**font : 14px/1.286 "Lucida Grande","Lucida Sans Unicode",Lucida,Arial,Helvetica,sans-serif;*/
+        }
+        h2 {
+            font-size : 1em;
+            margin : 0 0 0.8em;
+            color : #336699;
+        }
+        ul {
+            list-style : none outside none;
+        }
+
+        li {
+            border-bottom : 1px dotted #2F2F2F;
+            margin: 0 0 1em;
+            padding: 0 1px 1em;
+            font-size : 0.8em;
+        }
+
+        h3 {
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div id="analysisPane"/>
+        <h2>Rules</h2>
+            <ul>
+                <li><input type="checkbox" id="checkbox-1" checked="true" />Refactor duplicate commands to dsl</li>
+                <li><input type="checkbox" id="checkbox-2" checked="true" />Externalize oft-used xpaths</li>
+                <li><input type="checkbox" id="checkbox-3" checked="true" />Externalize values</li>
+                <li><input type="checkbox" id="checkbox-4" checked="true" />Internationalize labels</li>
+            </ul>
+        <br/>    
+        <div id="analysisResults">
+            Waiting for analysis to complete.
+        </div>
+        <div id="analysisResultsStatic" style="display:none">
+            Waiting for analysis to complete.
+        </div>
+    </div>
+</body>
+</html>

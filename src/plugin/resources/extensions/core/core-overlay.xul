@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+ 
+<!DOCTYPE window [
+<!ENTITY % browserDTD SYSTEM "chrome://browser/locale/browser.dtd">
+%browserDTD;
+<!ENTITY % seleniumIdeDTD SYSTEM "chrome://selenium-ide/locale/selenium-ide.dtd">
+%seleniumIdeDTD;
+]>
+
+<overlay id="core-overlay" title="Brightest Extensions" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script type="application/x-javascript" src="chrome://brightest-ide-extensions/content/core/core.js"/>
+  <script type="application/x-javascript" src="chrome://brightest-ide-extensions/content/core/dsl-extension.js"/>
+  <script type="application/x-javascript" src="chrome://brightest-ide-extensions/content/core/treeView-extension.js"/>
+  <script type="application/x-javascript" src="chrome://brightest-ide-extensions/content/core/debugger-extension.js"/>
+
+  <window title="BrighTest" id="selenium-ide"/>
+
+  <menupopup id="menu_ToolsPopup">
+    <menuitem label="BrighTest-Recorder"/>
+  </menupopup>
+  
+  <!--tabs id="viewTabs">
+	<tab id="resultTab" label="Results" />
+  </tabs-->
+  
+  <popup id="treeContextMenu">
+    <menuseparator/>
+    
+    <menuitem label="Add New DSL" oncommand="window.editor.treeView.addToDSL()" accesskey="A"/>
+    <menuitem label="Replace with DSL" oncommand="window.editor.treeView.replaceWithDSL()" accesskey="R"/>
+  </popup>
+</overlay>

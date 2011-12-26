@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+ 
+<?xml-stylesheet href="toolbar.css" type="text/css"?>
+ 
+<!DOCTYPE window [
+<!ENTITY % browserDTD SYSTEM "chrome://browser/locale/browser.dtd">
+%browserDTD;
+<!ENTITY % seleniumIdeDTD SYSTEM "chrome://selenium-ide/locale/selenium-ide.dtd">
+%seleniumIdeDTD;
+]>
+ 
+<overlay id="stop-button-overlay" title="Ultimate tool" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script type="application/x-javascript" src="chrome://brightest-ide-extensions/content/toolbar/toolbar.js"/>
+
+  <!--Adding commands to commandSet-->
+  <commandset id="seleniumIDECommands">
+    <command id="cmd_selenium_stop" oncommand="goDoCommand('cmd_selenium_stop')"/>
+  </commandset>
+  
+  <toolbar id="toolbar2">
+    <toolbarbutton id="stop-button" label="Stop" class="icon" tooltiptext="&bt.stopButton.tooltip;" command="cmd_selenium_stop"/>
+  </toolbar>
+</overlay>

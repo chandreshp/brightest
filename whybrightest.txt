@@ -1,0 +1,2 @@
+1. have a default wait loop most failures as the elements came via ajax or some other means which means in automated testing where there is no delay, it bombs.
+2. 
