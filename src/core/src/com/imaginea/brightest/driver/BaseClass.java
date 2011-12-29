@@ -10,6 +10,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 
 import com.imaginea.brightest.ExecutionContext;
@@ -20,11 +21,11 @@ public class BaseClass {
 	private ExecutionContext context = ExecutionContext.getNonStaticInstance();
 	@Parameters({"browser"})
 	@BeforeTest
-	public void beforeTest(String browser){
+	public void beforeTest(@Optional("firefox") String browser){
 		DesiredCapabilities capability= new DesiredCapabilities();
 		capability.setBrowserName(browser);
 		capability.setPlatform(Platform.ANY);
-	//	context.startServer();
+		//context.startServer();
 		try {
 			WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
 			selenium=new WebDriverBackedSelenium(driver, "http://www.google.com");
