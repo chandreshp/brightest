@@ -95,9 +95,9 @@ public class TestRunnerTest {
         TestRunner runner = new TestRunner();
         tempTestFile = File.createTempFile("Dummy", ".xls");
         String[] commands = new String[] {
-                "open(https://badgermeter.bigmachines.com/commerce/display_company_profile.jsp)",
+                "open(https://fictitious.com/fiction/display_company_profile.jsp)",
                 "type(//input[@name='username']|superuser)",
-                "type(//div[1]/div/div[2]/div[87]/div/div/div/input|kbloss@badgermeter.com,  no-reply@bigmachines.com)" };
+                "type(//div[1]/div/div[2]/div[87]/div/div/div/input|random@dummy.com,  no-reply@dummy.com)" };
         String[] reformattedCommands = new String[commands.length];
         for (int i = 0; i < reformattedCommands.length; i++) {
             String comp = commands[i];
