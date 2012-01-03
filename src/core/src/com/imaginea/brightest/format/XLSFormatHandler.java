@@ -192,6 +192,12 @@ public class XLSFormatHandler extends FormatHandler {
             testCase.setId(getTestId()).setSuiteName(bookName).setTestType(getType()).setDescription(getDescription()).setTags(getTags());
             return testCase;
         }
+        
+        public CommandBasedTest getDriverTestCase() {
+            CommandBasedTest testCase = new CommandBasedTest();
+            testCase.setId(getTestId()).setSuiteName(bookName).setTestType(getType()).setDescription(getDescription()).setTags(getTags());
+            return testCase;
+        }
 
         public String toString() {
             return String.format("%s [ Sheet: %s]", this.getClass().getSimpleName(), ((testSheet == null) ? "NONE" : getSheetName()));
@@ -303,7 +309,13 @@ public class XLSFormatHandler extends FormatHandler {
 
 	@Override
 	public CommandBasedTest loadDriverTest(String fileName) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		WorkBook workBook = new WorkBook(fileName);
+		TestCaseSheet sheet = workBook.nextElement();
+		CommandBasedTest testCase = sheet.getDriverTestCase();
+			while (sheet.hasMoreElements()) {
+				testCase.addCommand(loadCommand(sheet.nextElement()));
+	        }
+		return testCase;
 	}
 }

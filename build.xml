@@ -144,11 +144,19 @@
         <ant inheritAll="false" antfile="${plugin.build.dir}/build.xml" target="clean" />
 	</target>
 	<taskdef resource="testngtasks" classpath="${lib.dir}/testng-6.3.1.jar" />
-	<target name="ng-test" depends="make-core, run-setup">
+	<target name="ng-test" depends="clean,make-core, run-setup">
 			<delete dir="${REPORT}" />
 			<mkdir dir="${REPORT}" />
 			<mkdir dir="${REPORT}/TestNG-report" />
+			<mkdir dir="${staging.dir}/testcases" />
+			<copy todir="${staging.dir}/testcases" flatten="true">
+				<fileset dir="${testcase.folder.path}">
+		          <include name="**/*.*" />
+		        </fileset>
+			</copy>
 			<testng outputdir="${REPORT}/TestNG-report" classpathref="run.class.path">
+				<!-- <jvmarg value="-Xdebug" />
+				 <jvmarg value="-Xrunjdwp:transport=dt_socket,suspend=y,address=7070,server=y" /> -->
 				<xmlfileset dir="${basedir}" includes="testng.xml" />
 			</testng>
 		</target>
