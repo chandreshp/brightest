@@ -8,7 +8,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
@@ -18,9 +21,9 @@ import com.thoughtworks.selenium.Selenium;
 
 public class BaseClass {
 	protected Selenium selenium;
-	private ExecutionContext context = ExecutionContext.getNonStaticInstance();
+	protected ExecutionContext context = ExecutionContext.getNonStaticInstance();
 	@Parameters({"browser"})
-	@BeforeTest
+	@BeforeMethod
 	public void beforeTest(@Optional("firefox") String browser){
 		DesiredCapabilities capability= new DesiredCapabilities();
 		capability.setBrowserName(browser);
@@ -31,12 +34,13 @@ public class BaseClass {
 			selenium=new WebDriverBackedSelenium(driver, "http://www.google.com");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
+			Assert.fail("Failed due to malformed URL exception.");
 		} catch (Exception e) {
-			e.printStackTrace();
+			Assert.fail("Failed due to: "+ e.toString());
 		}
 		
 	}
-	@AfterTest
+	@AfterMethod
 	public void afterTest(){
 		selenium.stop();
 		//context.stopServer();

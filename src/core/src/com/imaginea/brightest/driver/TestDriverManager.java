@@ -3,6 +3,7 @@ package com.imaginea.brightest.driver;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.imaginea.brightest.ExecutionContext;
 import com.imaginea.brightest.format.CSVFormatHandler;
 import com.imaginea.brightest.format.FormatHandler;
 import com.imaginea.brightest.format.UnknownFormatException;
@@ -13,8 +14,9 @@ import com.thoughtworks.selenium.Selenium;
 public class TestDriverManager {
 	private final List<FormatHandler> formatHandlers = new ArrayList<FormatHandler>();
 	CommandBasedTest test;
-
-	public TestDriverManager() {
+	ExecutionContext context;
+	public TestDriverManager(ExecutionContext context) {
+		this.context=context;
 		formatHandlers.add(new XLSFormatHandler());
 		formatHandlers.add(new CSVFormatHandler());
 	}
@@ -31,8 +33,10 @@ public class TestDriverManager {
 			throw new UnknownFormatException(filename);
 		}
 	}
-
+	
 	public void runTest(Selenium selenium) {
+		context.getExecutor().setExceutionContext(context);
+		test.setCommandExecutor(context.getExecutor());
 		test.runTest(selenium);
 	}
 }

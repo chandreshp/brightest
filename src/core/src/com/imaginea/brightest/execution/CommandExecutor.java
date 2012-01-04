@@ -49,7 +49,7 @@ public class CommandExecutor implements PreferenceListener {
     private static final Log LOG = LogFactory.getLog(CommandExecutor.class);
     private final List<ExecutionStrategy> executionStrategies = new ArrayList<ExecutionStrategy>();
     private final ApplicationPreferences preferences;
-
+    private ExecutionContext context;
     public CommandExecutor(ApplicationPreferences preferences) {
         this.preferences = preferences;
         executionStrategies.add(new DynamicCommandExecutionStrategy());
@@ -74,11 +74,20 @@ public class CommandExecutor implements PreferenceListener {
         for (ExecutionStrategy strategy : executionStrategies) {
             if (strategy.appliesTo(command)) {
                 LOG.info("Running " + command + " with " + strategy);
-                command.prepare(ExecutionContext.getInstance());
+                if(context==null){
+                	command.prepare(ExecutionContext.getInstance());
+                }else{
+                	command.prepare(context);
+                }
+               // System.out.println("selenium object :"+selenium.toString());
                 strategy.execute(command,selenium);
                 break;
             }
         }
+    }
+    
+    public void setExceutionContext(ExecutionContext context){
+    	this.context=context;
     }
 
     /**
