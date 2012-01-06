@@ -1,0 +1,6 @@
+Purpose~Steps
+~login()
+~clickForAjaxResponse(//li[@id='test'])
+~waitForAjaxResponse(3000, MIssues)
+~clickForAjaxResponse(//li[@id='MIssues'])
+~waitForAjaxResponse(3000, work)
