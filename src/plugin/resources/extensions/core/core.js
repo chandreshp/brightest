@@ -115,6 +115,7 @@ Recorder.register = Recorder.register.wrap(
                             return function(ev){
                                 if(4===this.readyState && Application.prototype.playbackMode===true){
                                     Application.prototype.ajaxCallCount = Application.prototype.ajaxCallCount - 1;
+                                    Application.prototype.addedAjaxResponse += this.responseText;
                                 }
                                 if (ref) {
                                     ref.handleEvent(ev);
