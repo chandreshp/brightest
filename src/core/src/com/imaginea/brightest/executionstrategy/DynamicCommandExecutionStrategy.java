@@ -35,17 +35,26 @@ import com.imaginea.brightest.util.DiscoveryService;
 
 /**
  * Execution Strategy for dynamic commands. This strategy discovers extension classes from the classpath and adds them
- * for execution.
+ * for execution. The package which should be used for discovery can be passed as a system property, key is
+ * "brightest.discovery.package". Unlike static commands, the handlers which define these commands do not need to be
+ * added programmatically to brightest. These are auto-discovered and added. Refer to UserExtensionHandler for sample
+ * usage.
  */
 public class DynamicCommandExecutionStrategy extends CommandMethodExecutionStrategy {
-    private static final Log LOG = LogFactory.getLog(StaticCommandExecutionStrategy.class);
+    private static final Log LOG = LogFactory.getLog(DynamicCommandExecutionStrategy.class);
+    private static final String PACKAGE_KEY = "brightest.discovery.package";
+    private static final String DEFAULT_PACKAGE = "com.imaginea.brightest.extension";
 
     /**
      * Discovers new command classes and creates commands from them.
      */
     public DynamicCommandExecutionStrategy() {
         DiscoveryService discoveryService = new DiscoveryService();
-        List<Class<?>> commandClasses = discoveryService.discoverClasses("com.imaginea.brightest.extension");
+        String packageValue = System.getProperty(PACKAGE_KEY);
+        if (packageValue == null || packageValue.trim().length() == 0) {
+            packageValue = DEFAULT_PACKAGE;
+        }
+        List<Class<?>> commandClasses = discoveryService.discoverClasses(packageValue);
         LOG.debug("Discovered new command classes " + commandClasses);
         for (Class<?> commandClass : commandClasses) {
             discoverAndAddCommands(commandClass);

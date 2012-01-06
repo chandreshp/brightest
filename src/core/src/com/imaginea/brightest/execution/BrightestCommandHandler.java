@@ -4,6 +4,12 @@ import com.imaginea.brightest.Command;
 import com.imaginea.brightest.ExecutionContext;
 import com.thoughtworks.selenium.Selenium;
 
+/**
+ * Command Handler which addresses some of the gaps between the js and the java driver. Adds the methods available by
+ * default in js part to java driver.
+ * 
+ * @author apurba
+ */
 public class BrightestCommandHandler {
     @CommandInfo
     public boolean assertValue(ExecutionContext context, Command command) {

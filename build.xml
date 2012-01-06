@@ -125,7 +125,7 @@
 	<target name="run-unit" depends="make-core, run-setup" description="Runs brightest tests as JUnit with folder controlled by brightes.path">
 		<junit printsummary="on" fork="false" haltonfailure="no" showoutput="true">
 			<classpath refid="run.class.path"></classpath>
-			<sysproperty key="brighTest.path" value="./core/resource/test/" />
+			<sysproperty key="brighTest.path" value="/host/projects/imaginea-git/brightest/demo/xls" />
 			<formatter type="xml"/>
 			<test name="com.imaginea.brightest.test.BrightestTestSuite" >
 			</test>

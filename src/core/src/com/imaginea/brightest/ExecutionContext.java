@@ -82,6 +82,11 @@ public final class ExecutionContext {
         return client;
     }
 
+    public ExecutionContext setSelenium(Selenium selenium) {
+        this.client = selenium;
+        return this;
+    }
+
     /**
      * is idempotent, if a server has been already started does nothing, for a stopped server restarts
      */
@@ -114,10 +119,10 @@ public final class ExecutionContext {
      * @param preferences
      */
     public void updatePreferences(ApplicationPreferences preferences) {
-        this.preferences.update(preferences);
         for (PreferenceListener listener : preferenceListeners) {
-            listener.changed(this.preferences);
+            listener.changed(preferences);
         }
+        this.preferences.update(preferences);
         initializeProperties();
     }
 

@@ -36,6 +36,7 @@ public class TestDriverManager {
 	
 	public void runTest(Selenium selenium) {
 		context.getExecutor().setExceutionContext(context);
+        context.setSelenium(selenium);
 		test.setCommandExecutor(context.getExecutor());
 		test.runTest(selenium);
 	}

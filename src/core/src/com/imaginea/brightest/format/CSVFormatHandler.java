@@ -1,36 +1,26 @@
 package com.imaginea.brightest.format;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Hashtable;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import com.csvreader.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
+import com.csvreader.CsvReader;
 import com.imaginea.brightest.Command;
-
 import com.imaginea.brightest.test.BrightestTestSuite;
 import com.imaginea.brightest.test.CommandBasedTest;
 import com.imaginea.brightest.test.CommandBasedTestCase;
 
 public class CSVFormatHandler extends FormatHandler {
-	private static final Log LOGGER = LogFactory.getLog(XLSFormatHandler.class);
+    private static final Log LOGGER = LogFactory.getLog(CSVFormatHandler.class);
 
 	@Override
 	protected boolean understands(String fileName) {
@@ -55,7 +45,7 @@ public class CSVFormatHandler extends FormatHandler {
 		CommandBasedTestCase testCase = csv.getTestCase();
 		int noOfRows = csv.getNoOfRows();
 		for (int i = 1; i < noOfRows; i++) {
-			testCase.addCommand(loadCommand(new CommandRow((Integer) i, csv)));
+			testCase.addCommand(loadCommand(new CommandRow(i, csv)));
 		}
 		return testCase;
 	}
@@ -68,7 +58,7 @@ public class CSVFormatHandler extends FormatHandler {
 			int noOfRows = csv.getNoOfRows();
 			for (int i = 1; i < noOfRows; i++) {
 				testCase
-						.addCommand(loadCommand(new CommandRow((Integer) i, csv)));
+						.addCommand(loadCommand(new CommandRow(i, csv)));
 			}
 
 		} catch (FileNotFoundException e) {
@@ -88,10 +78,11 @@ public class CSVFormatHandler extends FormatHandler {
 
 	protected class TestCaseCsv extends CsvReader {
 
-		private Hashtable<Integer, ArrayList<String>> csvTable;
+		private final Hashtable<Integer, ArrayList<String>> csvTable;
 		private int row, noOfRows;
 		private ArrayList<String> columns, temp;
-		private String data, fileName;
+		private String data;
+        private final String fileName;
 
 		public TestCaseCsv(String fileName, char delimiter, Charset charset)
 				throws FileNotFoundException {
@@ -138,7 +129,7 @@ public class CSVFormatHandler extends FormatHandler {
 			temp = null;
 			data = "";
 			try {
-				temp = csvTable.get((Integer) row);
+				temp = csvTable.get(row);
 			} catch (NullPointerException e) {
 				System.out.println("Row not found in the said CSV.");
 			}

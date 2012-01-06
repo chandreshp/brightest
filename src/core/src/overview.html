@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+ <html>
+<head>
+</head>
+<body bgcolor="white">
+
+<a name="topofpage"></a>
+
+This documentation describes the BrighTest API. 
+
+<p>It has the following sections:
+</p>
+<ul>
+	<li><a href="#BrighTestAPI">What is the BrighTest API?</a></li>
+	<li><a href="#CmdExtension">How to add new commands?</a></li>
+	<li><a href="#Externalization">How to externalize locators and properties and support internationalization?</a></li>
+</ul>
+
+<h1>What is the BrighTest API?<a name="BrighTestAPI"></h1>
+
+<h1>How to add new commands?<a name="CmdExtension"></h1>
+<pre>
+BrighTest supports a command discovery mechanism. This allows for any methods in a class in a magic package to be exposed as selenium commands.
+The magic package can be also passed as a system property using brightest.discovery.package key. By default any class in com.imaginea.brightest.extension is used as a command handler.
+All methods annotated with com.imaginea.brightest.execution.CommandInfo annotation are treated as commands.
+
+Commands could either assert or do UI interactions.  assert methods should return a boolean flag, the framework automatically raises a ComparisonFailure exception if the return value is false.
+UI Interaction commands can be void. Their return value is ignored. The methods must follow the following signature
+public <return type, void for interaction and boolean for assert> <methodName>(ExecutionContext context, Command command) 
+
+
+Both command types have access to Execution Context, which allows them to access selenium. 
+ 
+</pre>
+
+
+<h1>How to externalize locators and properties and support internationalization?<a name="Externalization"></h1>
+<pre>
+BrighTest supports properties file. There can be one or multiple properties file. The order in which they are passed to BrighTest defines the overriding. For example if there are
+two properties file, both containing the key "loginBtn.locator", the property file mentioned first will override the second property file. The keys defined in property files can 
+be used for locators or optional args in the commands.  They have to be surrounded with "${}", for example the normal command "click loginBtn.locator" would need to be 
+written as "click ${loginBtn.locator}". Like locators the optional argument which is used to pass values can also be externalized to a properties file. The framework resolves the 
+command parameters when it sees the ${} mark. 
+</pre>

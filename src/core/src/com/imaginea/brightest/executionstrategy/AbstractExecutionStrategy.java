@@ -26,7 +26,6 @@ package com.imaginea.brightest.executionstrategy;
 
 import com.imaginea.brightest.ApplicationPreferences;
 import com.imaginea.brightest.Command;
-import com.imaginea.brightest.ExecutionContext;
 import com.thoughtworks.selenium.Selenium;
 
 /**
@@ -35,13 +34,11 @@ import com.thoughtworks.selenium.Selenium;
 public abstract class AbstractExecutionStrategy implements ExecutionStrategy {
     @Override
     public void changed(ApplicationPreferences newPreferences) {
-        throw new UnsupportedOperationException();
+        // do nothing
     }
 
     @Override
-    public void execute(Command command) {
-        throw new UnsupportedOperationException();
-    }
+    public abstract void execute(Command command);
     
     @Override
     public void execute(Command command,Selenium selenium){
@@ -49,7 +46,5 @@ public abstract class AbstractExecutionStrategy implements ExecutionStrategy {
     }
     
     @Override
-    public boolean appliesTo(Command command) {
-        throw new UnsupportedOperationException();
-    }
+    public abstract boolean appliesTo(Command command);
 }

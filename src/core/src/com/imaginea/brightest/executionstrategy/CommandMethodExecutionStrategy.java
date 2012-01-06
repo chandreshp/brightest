@@ -42,7 +42,7 @@ import com.thoughtworks.selenium.SeleniumException;
 /**
  * Base class for all command method execution strategies.
  */
-public class CommandMethodExecutionStrategy extends AbstractExecutionStrategy {
+public abstract class CommandMethodExecutionStrategy extends AbstractExecutionStrategy {
     private static final Log LOG = LogFactory.getLog(CommandMethodExecutionStrategy.class);
     protected final Map<String, CommandMethod> commandSet = new HashMap<String, CommandMethod>();
 
@@ -73,6 +73,15 @@ public class CommandMethodExecutionStrategy extends AbstractExecutionStrategy {
             LOG.error("Ignoring exception while discovering commands ", exc);
         }
     }
+
+    /**
+     * All command method classes apply to commands that are present in the set.
+     */
+    @Override
+    public boolean appliesTo(Command command) {
+        return commandSet.containsKey(command.getName());
+    }
+
 
     /**
      * Method wrapper around a command.
@@ -107,14 +116,6 @@ public class CommandMethodExecutionStrategy extends AbstractExecutionStrategy {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    /**
-     * All command method classes apply to commands that are present in the set.
-     */
-    @Override
-    public boolean appliesTo(Command command) {
-        return commandSet.containsKey(command.getName());
     }
 
     /**

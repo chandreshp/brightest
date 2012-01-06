@@ -32,7 +32,7 @@ import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONMap;
+import org.json.JSONObject;
 
 import com.imaginea.brightest.ApplicationPreferences;
 import com.imaginea.brightest.Command;
@@ -40,6 +40,11 @@ import com.imaginea.brightest.ExecutionContext;
 import com.imaginea.brightest.execution.CommandExecutor;
 import com.imaginea.brightest.util.Util;
 
+/**
+ * Execution strategy for DSL commands. DSL commands are composite commands stored in json format as a js file.
+ * 
+ * @author apurba
+ */
 public class DSLExecutionStrategy extends AbstractExecutionStrategy {
     private final Map<String, DSLCommand> dslCommands = new HashMap<String, DSLCommand>();
     private CommandExecutor commandExecutor = null;
@@ -94,7 +99,7 @@ public class DSLExecutionStrategy extends AbstractExecutionStrategy {
         try {
             JSONArray array = new JSONArray(dslContents);
             for (int i = 0; i < array.length(); i++) {
-                DSLCommand dslCommand = new DSLCommand((JSONMap) array.get(i));
+                DSLCommand dslCommand = new DSLCommand((JSONObject) array.get(i));
                 dslCommands.put(dslCommand.name, dslCommand);
             }
             return new ArrayList<DSLCommand>(dslCommands.values());
@@ -114,11 +119,11 @@ public class DSLExecutionStrategy extends AbstractExecutionStrategy {
         private final String name;
         private final List<Command> commands = new ArrayList<Command>();
 
-        private DSLCommand(JSONMap map) throws JSONException {
-            this.name = map.getString("name");
-            JSONArray commandArray = (JSONArray) map.get("commands");
+        private DSLCommand(JSONObject object) throws JSONException {
+            this.name = object.getString("name");
+            JSONArray commandArray = (JSONArray) object.get("commands");
             for (int j = 0; j < commandArray.length(); j++) {
-                JSONCommand jsonCommand = new JSONCommand((JSONMap) commandArray.get(j));
+                JSONCommand jsonCommand = new JSONCommand((JSONObject) commandArray.get(j));
                 add(jsonCommand.getCommand());
             }
         }
@@ -137,9 +142,9 @@ public class DSLExecutionStrategy extends AbstractExecutionStrategy {
     }
 
     protected class JSONCommand {
-        private final JSONMap map;
+        private final JSONObject map;
 
-        private JSONCommand(JSONMap map) {
+        private JSONCommand(JSONObject map) {
             this.map = map;
         }
 
