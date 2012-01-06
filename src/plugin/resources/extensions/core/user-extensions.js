@@ -1,9 +1,41 @@
 Selenium.prototype.doClickForAjaxResponse = function(locator, text) {
 
+    var window = selenium.browserbot.getCurrentWindow();
+    window = window.wrappedJSObject?window.wrappedJSObject:window;
+
+    // decorate to intercept the ajax requests
+    if(!window.XMLHttpRequest.brighTestOverride) {
+            window.XMLHttpRequest.prototype.open = (function(){
+                var ref2 = window.XMLHttpRequest.prototype.open;
+                window.XMLHttpRequest.brighTestOverride = true;
+                return function(){
+                    if(Application.prototype.threadSynch === Application.prototype.threadMaster){
+                        Application.prototype.ajaxCallCount = Application.prototype.ajaxCallCount + 1;
+                        this.onreadystatechange = function(){
+                            var ref = this.onreadystatechange;
+                            return function(ev){
+                                if(4===this.readyState && Application.prototype.playbackMode===true){
+                                    Application.prototype.ajaxCallCount = Application.prototype.ajaxCallCount - 1;
+                                    Application.prototype.addedAjaxResponse += this.responseText;
+                                }
+                                if (ref) {
+                                    ref.handleEvent(ev);
+                                }
+                            };
+                        }.apply(this);
+                    }
+                    ref2.apply(this,arguments);
+                };
+            }());
+    };
+
     Application.prototype.threadMaster = Math.random();
     Application.prototype.threadSynch = Application.prototype.threadMaster;
     Application.prototype.ajaxCallCount=0;
     Application.prototype.playbackMode=true;
+   Application.prototype.addedAjaxResponse = "";
+    Application.prototype.responseCounter = 0;
+
     setTimeout(function(){
         Application.prototype.threadSynch = 0;
     },0);
@@ -44,15 +76,31 @@ Selenium.prototype.doClickForAjaxResponse = function(locator, text) {
     //Application.prototype.playbackMode=false;
 };
 
-Selenium.prototype.doWaitForAjaxResponse = function(timeout) {
+Selenium.prototype.doWaitForAjaxResponse = function(timeout, text) {
     /**
    * @param timeout a timeout in milliseconds, after which this command will return with an error
+   * @param text the text to search for in the response
    */
-   script = "if(Application.prototype.ajaxCallCount===0)Application.prototype.playbackMode=false;Application.prototype.ajaxCallCount===0";
-    return Selenium.decorateFunctionWithTimeout(function () {
-        var window = selenium.browserbot.getCurrentWindow();
-        return eval(script);
-    }, timeout);
+    var self = this;
+    var start = new Date();
+    var condition = function () {
+        var conditionMet = false;
+
+        if (text) {
+            if (Application.prototype.addedAjaxResponse) { 
+                conditionMet =  (Application.prototype.addedAjaxResponse.indexOf(text) != -1);
+            }
+        } else {
+            conditionMet = (Application.prototype.ajaxCallCount === 0);
+        }
+        
+        if (conditionMet) {
+            Application.prototype.ajaxCallCount = 0;
+        }
+        return conditionMet;
+    };
+
+    return Selenium.decorateFunctionWithTimeout(condition, timeout);
 };
 
 
@@ -86,3 +134,5 @@ Selenium.prototype.doTypeForAjaxResponse = function(locator, text) {
     // Replace the element text with the new text
     this.page().replaceText(element, text);
 };
+
+LocatorBuilders.order = ['id', 'link', 'name', 'dom:name', 'xpath:link', 'xpath:img', 'xpath:attributes', 'xpath:href', 'dom:index', 'xpath:position'];

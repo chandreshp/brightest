@@ -114,9 +114,11 @@ Recorder.register = Recorder.register.wrap(
                             var ref = this.onreadystatechange;
                             return function(ev){
                                 if(4===this.readyState && Application.prototype.playbackMode===true){
-                                    Application.prototype.ajaxCallCount = Application.prototype.ajaxCallCount - 1;                        
+                                    Application.prototype.ajaxCallCount = Application.prototype.ajaxCallCount - 1;
                                 }
-                                originalRegister.handleEvent(ev);
+                                if (ref) {
+                                    ref.handleEvent(ev);
+                                }
                             };
                         }.apply(this);
                     }

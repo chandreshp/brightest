@@ -1,2 +1,3 @@
-1. have a default wait loop most failures as the elements came via ajax or some other means which means in automated testing where there is no delay, it bombs.
-2. 
+Selenium IDE supports
+LocatorBuilders.order = ['id', 'link', 'name', 'dom:name', 'xpath:link', 'xpath:img', 'xpath:attributes', 'xpath:href', 'dom:index', 'xpath:position'];
+whereas the java driver with backport support for selenium supports xpath, css and //. It does have support for additional properties via sizzle, but the client would need  a translation layer to support the same.
