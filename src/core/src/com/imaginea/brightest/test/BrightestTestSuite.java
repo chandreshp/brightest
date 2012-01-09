@@ -8,6 +8,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.runner.RunWith;
 
+import com.imaginea.brightest.ApplicationPreferences;
+import com.imaginea.brightest.ExecutionContext;
 import com.imaginea.brightest.TestManager;
 import com.imaginea.brightest.format.UnknownFormatException;
 import com.imaginea.brightest.util.Util;
@@ -21,13 +23,15 @@ public class BrightestTestSuite extends TestSuite {
         this(false);
     }
 
-    public BrightestTestSuite(boolean folderFound) {
-        init(folderFound);
+    public BrightestTestSuite(boolean discover) {
+        init(discover);
     }
 
     private void init(boolean discover) {
         if (discover) {
+            ApplicationPreferences preferences = ExecutionContext.getInstance().getPreferences();
             String testFolderOrFile = System.getProperty("brighTest.path");
+            testFolderOrFile = (Util.isNotBlank(testFolderOrFile)) ? testFolderOrFile : preferences.getTestPath();
             if (Util.isNotBlank(testFolderOrFile)) {
                 discoverAndAddTests(testFolderOrFile);
             }

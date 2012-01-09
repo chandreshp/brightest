@@ -72,15 +72,14 @@ public class TestManager {
             LOG.debug("Executing " + preferences);
             ExecutionContext context = ExecutionContext.getInstance();
             context.updatePreferences(preferences);
-            context.startServer();
-            context.startClient();
+            context.start();
             TestSuite suite = loadSuite(preferences.getTestPath());
             TestResult result = new TestResult();
             addResultListener(result);
             suite.run(result);
             return result;
         } finally {
-            ExecutionContext.getInstance().stopServer();
+            ExecutionContext.getInstance().stop();
         }
     }
 

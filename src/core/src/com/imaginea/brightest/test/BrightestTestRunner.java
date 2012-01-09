@@ -78,8 +78,7 @@ public class BrightestTestRunner extends Runner {
     @Override
     public void run(RunNotifier notifier) {
         ExecutionContext context = ExecutionContext.getInstance();
-        context.startServer();
-        context.startClient();
+        context.start();
         notifier.fireTestStarted(suiteDesc);
         TestResult result = new TestResult();
         result.addListener(createNotifier(notifier));
@@ -87,6 +86,7 @@ public class BrightestTestRunner extends Runner {
             suite.run(result);
         }
         notifier.fireTestFinished(suiteDesc);
+        context.stop();
     }
 
     private TestListener createNotifier(RunNotifier notifier) {

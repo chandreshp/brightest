@@ -25,7 +25,6 @@
 package com.imaginea.brightest.executionstrategy;
 
 import com.imaginea.brightest.Command;
-import com.imaginea.brightest.ExecutionContext;
 import com.imaginea.brightest.execution.PreferenceListener;
 import com.thoughtworks.selenium.Selenium;
 

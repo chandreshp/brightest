@@ -6,6 +6,7 @@ import java.util.List;
 import com.imaginea.brightest.Command;
 import com.imaginea.brightest.ExecutionContext;
 import com.imaginea.brightest.execution.CommandExecutor;
+import com.imaginea.brightest.util.Util;
 import com.thoughtworks.selenium.Selenium;
 
 public class CommandBasedTest {
@@ -45,7 +46,11 @@ public class CommandBasedTest {
     }
 
     public String getName() {
-        return String.format("[%s %s]", this.id, this.suiteName);
+        if (Util.isNotBlank(this.testName)) {
+            return this.testName;
+        } else {
+            return String.format("[%s %s]", this.id, this.suiteName);
+        }
     }
     public void setName(String name){
     	this.testName=name;

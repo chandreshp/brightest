@@ -1,5 +1,14 @@
 package com.imaginea.brightest;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Properties;
+
+import org.openqa.selenium.Platform;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.server.RemoteControlConfiguration;
 
 import com.imaginea.brightest.util.Util;
@@ -8,8 +17,10 @@ import com.imaginea.brightest.util.Util;
  * Contains preferences, exposes finer methods for better control
  */
 public class ApplicationPreferences {
+    private static final int DEFAULT_HTTP_PORT = 80;
+    private static final String DEFAULT_PREFIX = "wd/hub";
     private String host;
-    private int port;
+    private String port;
     private String browser;
     private String url;
     private String testPath;
@@ -21,10 +32,51 @@ public class ApplicationPreferences {
 
     public ApplicationPreferences() {
         host = "localhost";
-        port = RemoteControlConfiguration.DEFAULT_PORT;
-        browser = "*chrome";
+        port = Integer.toString(RemoteControlConfiguration.DEFAULT_PORT);
+        browser = "firefox";
         url = "http://www.google.co.in";
         timeout = "10000";
+    }
+
+    public ApplicationPreferences(String filePath) {
+        this();
+
+        Properties properties = new Properties();
+        try {
+            properties.load(new FileInputStream(filePath));
+
+            // fill in all string properties reflectively
+            Field[] fields = this.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                if (field.getType() == String.class) {
+                    String providedValue = properties.getProperty(field.getName(), null);
+                    if (Util.isNotBlank(providedValue)) {
+                        field.set(this, providedValue);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new ConfigurationException("Problems with configuration file path ->" + filePath, e);
+        } catch (IllegalArgumentException e) {
+            throw new ConfigurationException("Problems with configuration file parsing ->" + filePath, e);
+        } catch (IllegalAccessException e) {
+            throw new ConfigurationException("Problems with configuration file parsing ->" + filePath, e);
+        }
+    }
+
+    public DesiredCapabilities getCapabilities() {
+        DesiredCapabilities capability = new DesiredCapabilities();
+        capability.setBrowserName(browser);
+        capability.setPlatform(Platform.ANY);
+        return capability;
+    }
+
+    public URL getServerUrl() {
+        try {
+            return new URL("http://" + this.host + ((getPort() == DEFAULT_HTTP_PORT) ? "" : ":" + this.port) + "/" + DEFAULT_PREFIX);
+        } catch (MalformedURLException e) {
+            throw new ConfigurationException("Server URL issues", e);
+        }
     }
 
     public String getDslPath() {
@@ -46,11 +98,11 @@ public class ApplicationPreferences {
     }
 
     public int getPort() {
-        return port;
+        return Integer.parseInt(port);
     }
 
     public ApplicationPreferences setPort(int port) {
-        this.port = port;
+        this.port = Integer.toString(port);
         return this;
     }
 
@@ -139,4 +191,5 @@ public class ApplicationPreferences {
             return false;
         }
     }
+
 }

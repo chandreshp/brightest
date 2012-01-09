@@ -31,28 +31,33 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openqa.selenium.server.SeleniumServer;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverBackedSelenium;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.imaginea.brightest.execution.CommandExecutor;
 import com.imaginea.brightest.execution.PreferenceListener;
 import com.imaginea.brightest.util.HierarchicalProperties;
 import com.imaginea.brightest.util.Util;
-import com.thoughtworks.selenium.CommandProcessor;
-import com.thoughtworks.selenium.DefaultSelenium;
-import com.thoughtworks.selenium.HttpCommandProcessor;
 import com.thoughtworks.selenium.Selenium;
+import com.thoughtworks.selenium.SeleniumException;
 
 /**
  * Central control for everything we need for executing a test. Has selenium server, client and preferences.
  */
 public final class ExecutionContext {
+    /**
+     * System property used for defining the configuration file path
+     */
+    public static final String CONFIGURATION_PATH = "brightest.configuration.file";
     private static final Log LOG = LogFactory.getLog(ExecutionContext.class);
     private static final ExecutionContext INSTANCE = new ExecutionContext();
     private final CommandExecutor executor;
     private final ApplicationPreferences preferences;
-    private CommandProcessor commandProcessor;
     private Selenium client;
-    private SeleniumServer server;
     private final HierarchicalProperties properties = new HierarchicalProperties();
     private final List<PreferenceListener> preferenceListeners = new ArrayList<PreferenceListener>();
 
@@ -64,8 +69,13 @@ public final class ExecutionContext {
         return new ExecutionContext();
     }
 
-    protected ExecutionContext() {
-        preferences = new ApplicationPreferences();
+    private ExecutionContext() {
+        String configurationPath = null;
+        if ((configurationPath = System.getProperty(CONFIGURATION_PATH, null)) != null) {
+            preferences = new ApplicationPreferences(configurationPath);
+        } else {
+            preferences = new ApplicationPreferences();
+        }
         executor = new CommandExecutor(preferences);
         preferenceListeners.add(executor);
     }
@@ -76,42 +86,30 @@ public final class ExecutionContext {
 
     public Selenium getSelenium() {
         if (client == null) {
-            commandProcessor = new HttpCommandProcessor(preferences.getHost(), preferences.getPort(), preferences.getBrowser(), preferences.getUrl());
-            client = new DefaultSelenium(commandProcessor);
+            LOG.debug(String.format("Starting selenium with %s", preferences.toString()));
+            WebDriver driver = getDriver(preferences.getCapabilities());
+            client = new WebDriverBackedSelenium(driver, preferences.getUrl());
         }
         return client;
     }
+
 
     public ExecutionContext setSelenium(Selenium selenium) {
         this.client = selenium;
         return this;
     }
 
-    /**
-     * is idempotent, if a server has been already started does nothing, for a stopped server restarts
-     */
-    public void startServer() {
-        if (server == null) {
-            try {
-                server = new SeleniumServer();
-                server.start();
-                LOG.debug(String.format("Started server with details [%s %s]", preferences.getHost(), preferences.getPort()));
-            } catch (Exception e) {
-                throw new ServerStartException("Server could not be started");
-            }
+    public boolean stop() {
+        if (client != null) {
+            client.stop();
         }
+        return true;
     }
 
-    /**
-     * Idempotent, on a stopped server is a no op.
-     */
-    public void stopServer() {
-        if (server != null) {
-            server.stop();
-            server = null;
-            LOG.debug("Stopped server");
-        }
+    public boolean start() {
+        return true;
     }
+
 
     /**
      * Updates preference with values from the passed param.
@@ -123,13 +121,6 @@ public final class ExecutionContext {
             listener.changed(preferences);
         }
         this.preferences.update(preferences);
-        initializeProperties();
-    }
-
-    public void startClient() {
-        getSelenium().start();
-        client.windowMaximize();
-        LOG.debug("Started client");
         initializeProperties();
     }
 
@@ -172,11 +163,16 @@ public final class ExecutionContext {
         }
     }
 
-    private static class ServerStartException extends RuntimeException {
-        private static final long serialVersionUID = -4232597188829218581L;
 
-        public ServerStartException(String message) {
-            super(message);
+    private WebDriver getDriver(DesiredCapabilities capabilities) {
+        String browser = capabilities.getBrowserName();
+        if (DesiredCapabilities.firefox().getBrowserName().equals(browser)) {
+            return new FirefoxDriver();
+        } else if (DesiredCapabilities.internetExplorer().getBrowserName().equals(browser)) {
+            return new InternetExplorerDriver();
+        } else if (DesiredCapabilities.chrome().getBrowserName().equals(browser)) {
+            return new ChromeDriver();
         }
+        throw new SeleniumException("Unable to determine which driver to use: " + capabilities);
     }
 }
