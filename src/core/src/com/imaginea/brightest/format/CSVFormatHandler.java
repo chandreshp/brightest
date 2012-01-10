@@ -1,5 +1,7 @@
 package com.imaginea.brightest.format;
 
+import static com.imaginea.brightest.util.Util.isNotBlank;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,17 +9,13 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.csvreader.CsvReader;
 import com.imaginea.brightest.Command;
-import com.imaginea.brightest.test.BrightestTestSuite;
 import com.imaginea.brightest.test.CommandBasedTest;
-import com.imaginea.brightest.test.CommandBasedTestCase;
+import com.imaginea.brightest.test.CommandBasedTestGroup;
 
 public class CSVFormatHandler extends FormatHandler {
     private static final Log LOGGER = LogFactory.getLog(CSVFormatHandler.class);
@@ -27,53 +25,48 @@ public class CSVFormatHandler extends FormatHandler {
 		return fileName.endsWith(".csv");
 	}
 
-	@Override
-	protected TestSuite loadSuiteInternal(String fileName) {
-		TestSuite suite = new BrightestTestSuite();
-		try {
-			TestCaseCsv csv = new TestCaseCsv(fileName, '~');
-			suite.addTest(loadTestCase(csv));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+    @Override
+    protected CommandBasedTestGroup loadTestSuiteInternal(String fileName) {
+        CommandBasedTestGroup group = new CommandBasedTestGroup();
+        try {
+            TestCaseCsv csv = new TestCaseCsv(fileName, '~');
+            group.addTest(loadTestCase(csv));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return group;
+    }
 
-		}
-		return suite;
+    @Override
+    protected CommandBasedTest loadTestCaseInternal(String fileName) {
+        CommandBasedTest testCase = null;
+        try {
+            TestCaseCsv csv = new TestCaseCsv(fileName, '~');
+            testCase = csv.getTest();
+            int noOfRows = csv.getNoOfRows();
+            for (int i = 1; i < noOfRows; i++) {
+                testCase.addCommand(loadCommand(new CommandRow(i, csv)));
+            }
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return testCase;
+    }
 
-	}
 
-	private TestCase loadTestCase(TestCaseCsv csv) {
-		CommandBasedTestCase testCase = csv.getTestCase();
+    private CommandBasedTest loadTestCase(TestCaseCsv csv) {
+        CommandBasedTest test = csv.getTest();
 		int noOfRows = csv.getNoOfRows();
 		for (int i = 1; i < noOfRows; i++) {
-			testCase.addCommand(loadCommand(new CommandRow(i, csv)));
+            test.addCommand(loadCommand(new CommandRow(i, csv)));
 		}
-		return testCase;
+        return test;
 	}
 
-	public CommandBasedTest loadDriverTest(String fileName) {
-		CommandBasedTest testCase = null;
-		try {
-			TestCaseCsv csv = new TestCaseCsv(fileName, '~');
-			testCase = csv.getTest();
-			int noOfRows = csv.getNoOfRows();
-			for (int i = 1; i < noOfRows; i++) {
-				testCase
-						.addCommand(loadCommand(new CommandRow(i, csv)));
-			}
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return testCase;
-	}
 
 	private Command loadCommand(CommandRow commandRow) {
 		return commandRow.getCommand();
-	}
-
-	private static boolean isNotBlank(String value) {
-		return (value != null && value.trim().length() > 0);
 	}
 
 	protected class TestCaseCsv extends CsvReader {
@@ -147,13 +140,6 @@ public class CSVFormatHandler extends FormatHandler {
 			return noOfRows;
 		}
 
-		public CommandBasedTestCase getTestCase() {
-			CommandBasedTestCase testCase = new CommandBasedTestCase();
-			testCase.setName(new File(fileName).getName());
-			testCase.setId(new File(fileName).getName());
-			return testCase;
-		}
-
 		public CommandBasedTest getTest() {
 			CommandBasedTest testCase = new CommandBasedTest();
 			testCase.setName(new File(fileName).getName());
@@ -163,7 +149,7 @@ public class CSVFormatHandler extends FormatHandler {
 
 	}
 
-	protected static class CommandRow {
+    protected static class CommandRow {
 		private static enum LegacyRowFormat {
 			PURPOSE, STEPS;
 		}
@@ -203,8 +189,7 @@ public class CSVFormatHandler extends FormatHandler {
 				}
 				return command;
 			} catch (RuntimeException exc) {
-				LOGGER.error("Problems with row " + row + " of worksheet "
-						+ csv.getTestCase());
+                LOGGER.error("Problems with row " + row + " of worksheet " + csv.getTest());
 				throw exc;
 			}
 		}

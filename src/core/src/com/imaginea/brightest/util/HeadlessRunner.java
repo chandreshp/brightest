@@ -13,7 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.imaginea.brightest.ApplicationPreferences;
-import com.imaginea.brightest.TestManager;
+import com.imaginea.brightest.junit.JUnitTestManager;
 import com.imaginea.brightest.util.OptionParser.Option;
 import com.imaginea.brightest.util.OptionParser.ParsingException;
 
@@ -58,7 +58,7 @@ public class HeadlessRunner {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
         String time = dateFormat.format(new Date());
         String reportFile = "Report" + time;
-        TestManager manager = new TestManager();
+        JUnitTestManager manager = new JUnitTestManager();
         // TODO populate preferences from options directly
         ApplicationPreferences preferences = new ApplicationPreferences();
         preferences.setHost(hostName.getValue()).setPort(port.getValue()).setBrowser(browser.getValue()).setUrl(browserUrl.getValue());

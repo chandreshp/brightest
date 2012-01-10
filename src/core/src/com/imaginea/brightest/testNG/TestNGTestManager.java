@@ -1,30 +1,21 @@
-package com.imaginea.brightest.driver;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.imaginea.brightest.testNG;
 
 import com.imaginea.brightest.ExecutionContext;
-import com.imaginea.brightest.format.CSVFormatHandler;
 import com.imaginea.brightest.format.FormatHandler;
 import com.imaginea.brightest.format.UnknownFormatException;
-import com.imaginea.brightest.format.XLSFormatHandler;
 import com.imaginea.brightest.test.CommandBasedTest;
 import com.thoughtworks.selenium.Selenium;
 
-public class TestDriverManager {
-	private final List<FormatHandler> formatHandlers = new ArrayList<FormatHandler>();
-	CommandBasedTest test;
-	ExecutionContext context;
-	public TestDriverManager(ExecutionContext context) {
+public class TestNGTestManager {
+    private CommandBasedTest test;
+    private final ExecutionContext context;
+	public TestNGTestManager(ExecutionContext context) {
 		this.context=context;
-		formatHandlers.add(new XLSFormatHandler());
-		formatHandlers.add(new CSVFormatHandler());
 	}
 
 	public void loadTest(String filename) {
-
-		for (FormatHandler formatHandler : formatHandlers) {
-			this.test = formatHandler.loadDriverTestFile(filename);
+        for (FormatHandler formatHandler : this.context.getFormatHandlers()) {
+			this.test = formatHandler.loadTestCase(filename);
 			if (this.test != null) {
 				break;
 			}

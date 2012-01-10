@@ -27,6 +27,7 @@ package com.imaginea.brightest;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -40,6 +41,10 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.imaginea.brightest.execution.CommandExecutor;
 import com.imaginea.brightest.execution.PreferenceListener;
+import com.imaginea.brightest.format.CSVFormatHandler;
+import com.imaginea.brightest.format.FormatHandler;
+import com.imaginea.brightest.format.HTMLFormatHandler;
+import com.imaginea.brightest.format.XLSFormatHandler;
 import com.imaginea.brightest.util.HierarchicalProperties;
 import com.imaginea.brightest.util.Util;
 import com.thoughtworks.selenium.Selenium;
@@ -60,6 +65,7 @@ public final class ExecutionContext {
     private Selenium client;
     private final HierarchicalProperties properties = new HierarchicalProperties();
     private final List<PreferenceListener> preferenceListeners = new ArrayList<PreferenceListener>();
+    private final List<FormatHandler> formatHandlers = new ArrayList<FormatHandler>();
 
     public static ExecutionContext getInstance() {
         return INSTANCE;
@@ -78,6 +84,9 @@ public final class ExecutionContext {
         }
         executor = new CommandExecutor(preferences);
         preferenceListeners.add(executor);
+        formatHandlers.add(new XLSFormatHandler());
+        formatHandlers.add(new CSVFormatHandler());
+        formatHandlers.add(new HTMLFormatHandler());
     }
 
     public CommandExecutor getExecutor() {
@@ -174,5 +183,9 @@ public final class ExecutionContext {
             return new ChromeDriver();
         }
         throw new SeleniumException("Unable to determine which driver to use: " + capabilities);
+    }
+
+    public List<FormatHandler> getFormatHandlers() {
+        return Collections.unmodifiableList(formatHandlers);
     }
 }

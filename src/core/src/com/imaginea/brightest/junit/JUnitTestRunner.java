@@ -22,7 +22,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.imaginea.brightest.test;
+package com.imaginea.brightest.junit;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
@@ -39,26 +39,27 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
 import com.imaginea.brightest.ExecutionContext;
+import com.imaginea.brightest.junit.JUnitTestSuiteAdapter;
 
 /**
  * Test runner which bridges the gap between old and new junit.
  */
-public class BrightestTestRunner extends Runner {
-    private static final Log LOG = LogFactory.getLog(BrightestTestRunner.class);
-    private BrightestTestSuite suite = null;
+public class JUnitTestRunner extends Runner {
+    private static final Log LOG = LogFactory.getLog(JUnitTestRunner.class);
+    private JUnitTestSuiteAdapter suite = null;
     private Description suiteDesc;
 
-    public BrightestTestRunner(Class<?> testClass) {
-        if (testClass != BrightestTestSuite.class) {
+    public JUnitTestRunner(Class<?> testClass) {
+        if (testClass != JUnitTestSuiteAdapter.class) {
             throw new IllegalArgumentException("We can only run BrighTest tests using this runner");
         }
     }
 
     @Override
     public Description getDescription() {
-        Description suiteDesc = Description.createSuiteDescription(BrightestTestSuite.class);
+        Description suiteDesc = Description.createSuiteDescription(JUnitTestSuiteAdapter.class);
         try {
-            suite = new BrightestTestSuite(true);
+            suite = new JUnitTestSuiteAdapter(true);
             for (int i = 0; i < suite.testCount(); i++) {
                 Test test = suite.testAt(i);
                 if (test instanceof TestSuite) {

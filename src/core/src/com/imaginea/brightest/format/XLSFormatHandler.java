@@ -24,12 +24,11 @@
  */
 package com.imaginea.brightest.format;
 
+import static com.imaginea.brightest.util.Util.isNotBlank;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Enumeration;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,18 +38,14 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import com.imaginea.brightest.Command;
-import com.imaginea.brightest.test.BrightestTestSuite;
 import com.imaginea.brightest.test.CommandBasedTest;
-import com.imaginea.brightest.test.CommandBasedTestCase;
+import com.imaginea.brightest.test.CommandBasedTestGroup;
 
 /**
- * TODO add CSVFormatHandler
- * 
  * <pre>
  * FormatHandler for xls files. Reads and writes tests from and to xls files.
  * </pre>
  * 
- * @author apurba
  */
 public class XLSFormatHandler extends FormatHandler {
     private static final Log LOGGER = LogFactory.getLog(XLSFormatHandler.class);
@@ -61,18 +56,29 @@ public class XLSFormatHandler extends FormatHandler {
     }
 
     @Override
-    protected TestSuite loadSuiteInternal(String fileName) {
-        TestSuite suite = new BrightestTestSuite();
+    protected CommandBasedTestGroup loadTestSuiteInternal(String fileName) {
+        CommandBasedTestGroup group = new CommandBasedTestGroup();
         WorkBook workBook = new WorkBook(fileName);
         while (workBook.hasMoreElements()) {
             TestCaseSheet sheet = workBook.nextElement();
-            suite.addTest(loadTestCase(sheet));
+            group.addTest(loadTestCase(sheet));
         }
-        return suite;
+        return group;
     }
 
-    private TestCase loadTestCase(TestCaseSheet sheet) {
-        CommandBasedTestCase testCase = sheet.getTestCase();
+    @Override
+    protected CommandBasedTest loadTestCaseInternal(String fileName) {
+        WorkBook workBook = new WorkBook(fileName);
+        TestCaseSheet sheet = workBook.nextElement();
+        CommandBasedTest testCase = sheet.getDriverTestCase();
+        while (sheet.hasMoreElements()) {
+            testCase.addCommand(loadCommand(sheet.nextElement()));
+        }
+        return testCase;
+    }
+
+    public CommandBasedTest loadTestCase(TestCaseSheet sheet) {
+        CommandBasedTest testCase = sheet.getTest();
         while (sheet.hasMoreElements()) {
             testCase.addCommand(loadCommand(sheet.nextElement()));
         }
@@ -104,10 +110,6 @@ public class XLSFormatHandler extends FormatHandler {
                 cellValue = "" + ((cell.getRichStringCellValue() == null) ? "" : cell.getRichStringCellValue().getString());
             return cellValue.trim();
         }
-    }
-
-    private static boolean isNotBlank(String value) {
-        return (value != null && value.trim().length() > 0);
     }
 
     private static class WorkBook implements Enumeration<TestCaseSheet> {
@@ -187,8 +189,8 @@ public class XLSFormatHandler extends FormatHandler {
             return valueOf(cellAt(testRow, HeaderRow.WORKSHEET.ordinal()));
         }
 
-        public CommandBasedTestCase getTestCase() {
-            CommandBasedTestCase testCase = new CommandBasedTestCase();
+        public CommandBasedTest getTest() {
+            CommandBasedTest testCase = new CommandBasedTest();
             testCase.setId(getTestId()).setSuiteName(bookName).setTestType(getType()).setDescription(getDescription()).setTags(getTags());
             return testCase;
         }
@@ -307,15 +309,4 @@ public class XLSFormatHandler extends FormatHandler {
         }
     }
 
-	@Override
-	public CommandBasedTest loadDriverTest(String fileName) {
-		
-		WorkBook workBook = new WorkBook(fileName);
-		TestCaseSheet sheet = workBook.nextElement();
-		CommandBasedTest testCase = sheet.getDriverTestCase();
-			while (sheet.hasMoreElements()) {
-				testCase.addCommand(loadCommand(sheet.nextElement()));
-	        }
-		return testCase;
-	}
 }

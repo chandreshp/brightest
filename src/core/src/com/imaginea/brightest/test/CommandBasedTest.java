@@ -9,6 +9,10 @@ import com.imaginea.brightest.execution.CommandExecutor;
 import com.imaginea.brightest.util.Util;
 import com.thoughtworks.selenium.Selenium;
 
+/**
+ * Each instance of this class represents a test with a name and id. This can be used by the junit and testng wrappers
+ * for the actual execution
+ */
 public class CommandBasedTest {
 	private final List<Command> commands = new ArrayList<Command>();
     private CommandExecutor executor = null;

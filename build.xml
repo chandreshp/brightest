@@ -1,98 +1,98 @@
 <project name="brightest" default="make-core">
 
-    <property name="basedir"  value="." />
+	<property name="basedir" value="." />
 	<property file="build.properties" />
-	<property name="core.jar" value="brightest-core.jar"/>
-	<property name="client.jar" value="brightest-client.jar"/>
+	<property name="core.jar" value="brightest-core.jar" />
+	<property name="client.jar" value="brightest-client.jar" />
 
 	<property name="core.src.dir" value="${basedir}/src/core/src" />
 	<property name="core.resources.dir" value="${basedir}/src/core/resource" />
 	<property name="client.src.dir" value="${basedir}/src/client/src" />
 	<property name="plugin.build.dir" value="${basedir}/src/plugin/" />
 
-    <property name="lib.dir" value="${basedir}/lib"/>
+	<property name="lib.dir" value="${basedir}/lib" />
 
-	<property name="staging.dir" value="${basedir}/dist"/>
-    <property name="staging.core.dir" value="${staging.dir}/core"/>
-    <property name="staging.client.dir" value="${staging.dir}/client"/>
+	<property name="staging.dir" value="${basedir}/dist" />
+	<property name="staging.core.dir" value="${staging.dir}/core" />
+	<property name="staging.client.dir" value="${staging.dir}/client" />
 
-    <property name="client.classes.dir" value="${staging.client.dir}/classes"/>
-    <property name="core.classes.dir" value="${staging.core.dir}/classes"/>
+	<property name="client.classes.dir" value="${staging.client.dir}/classes" />
+	<property name="core.classes.dir" value="${staging.core.dir}/classes" />
 	<property name="REPORT" value="${basedir}/test-report" />
-	
-    <target name="init">
-      <tstamp>
-        <format property="TODAY" pattern="d-MMMM-yyyy" />
-      </tstamp>
-    	<mkdir dir="${staging.dir}"/>
-        <path id="compile.class.path">
-     	    <fileset dir="${lib.dir}">
-    	        <include name="**/*.jar"/>
-            </fileset>
-        </path>
-    </target>
 
-    <!-- compile -->
-    <target name="compile-client" depends="init">
-    	<mkdir dir="${client.classes.dir}"/>
-        <javac srcdir="${client.src.dir}" destdir="${client.classes.dir}" classpathref="compile.class.path" nowarn="yes" debug="yes">
-            <!-- <compilerarg value="-Xlint:unchecked"/> -->
-        </javac>
-    </target>
+	<target name="init">
+		<tstamp>
+			<format property="TODAY" pattern="d-MMMM-yyyy" />
+		</tstamp>
+		<mkdir dir="${staging.dir}" />
+		<path id="compile.class.path">
+			<fileset dir="${lib.dir}">
+				<include name="**/*.jar" />
+			</fileset>
+		</path>
+	</target>
 
-    <target name="compile-core" depends="init">
-    	<mkdir dir="${core.classes.dir}"/>
-        <javac srcdir="${core.src.dir}" destdir="${core.classes.dir}" classpathref="compile.class.path" nowarn="yes" debug="yes">
-            <!-- <compilerarg value="-Xlint:unchecked"/> -->
-        </javac>
-    </target>
+	<!-- compile -->
+	<target name="compile-client" depends="init">
+		<mkdir dir="${client.classes.dir}" />
+		<javac srcdir="${client.src.dir}" destdir="${client.classes.dir}" classpathref="compile.class.path" nowarn="yes" debug="yes">
+			<!-- <compilerarg value="-Xlint:unchecked"/> -->
+		</javac>
+	</target>
 
-    <!-- jar -->
-    <target name="jar-core" depends="init" >
-        <jar jarfile="${staging.dir}/${core.jar}">
-            <manifest>
-            	<attribute name="Implementation-Version" value="${build.version} ${TODAY}"/> 
-                <attribute name="Main-Class" value="com.imaginea.brightest.util.HeadlessRunner"/>
-                <attribute name="Class-Path" value="${lib.dir}"/>
-             </manifest>
+	<target name="compile-core" depends="init">
+		<mkdir dir="${core.classes.dir}" />
+		<javac srcdir="${core.src.dir}" destdir="${core.classes.dir}" classpathref="compile.class.path" nowarn="yes" debug="yes">
+			<!-- <compilerarg value="-Xlint:unchecked"/> -->
+		</javac>
+	</target>
 
-            <fileset dir="${core.classes.dir}">
-                <include name="**/*.class"/>
-            </fileset>
-            <fileset dir="${core.resources.dir}">
-                <include name="**/*.*"/>
-            </fileset>
-        </jar>
-    </target>
+	<!-- jar -->
+	<target name="jar-core" depends="init">
+		<jar jarfile="${staging.dir}/${core.jar}">
+			<manifest>
+				<attribute name="Implementation-Version" value="${build.version} ${TODAY}" />
+				<attribute name="Main-Class" value="com.imaginea.brightest.util.HeadlessRunner" />
+				<attribute name="Class-Path" value="${lib.dir}" />
+			</manifest>
 
-    <target name="jar-client" depends="init">
-        <jar jarfile="${staging.dir}/${client.jar}">
-            <fileset dir="${client.classes.dir}">
-                <include name="**/*.class"/>
-            </fileset>
-        </jar>
-    </target>
+			<fileset dir="${core.classes.dir}">
+				<include name="**/*.class" />
+			</fileset>
+			<fileset dir="${core.resources.dir}">
+				<include name="**/*.*" />
+			</fileset>
+		</jar>
+	</target>
 
-    <target name="all" depends="clean, make-core, make-client, make-plugin" description="Builds the core, client and plugin"/>
+	<target name="jar-client" depends="init">
+		<jar jarfile="${staging.dir}/${client.jar}">
+			<fileset dir="${client.classes.dir}">
+				<include name="**/*.class" />
+			</fileset>
+		</jar>
+	</target>
 
-    <target name="make-core" depends="compile-core, jar-core" description="Builds the core jar">
-    </target>
+	<target name="all" depends="clean, make-core, make-client, make-plugin" description="Builds the core, client and plugin" />
 
-    <target name="make-client" depends="compile-client, jar-client" description="Builds the client jar">
-    </target>
+	<target name="make-core" depends="compile-core, jar-core" description="Builds the core jar">
+	</target>
 
-    <target name="make-plugin" depends="init" description="Builds the client plugin used as BrighTest IDE">
-      <property name="target.name" value="make-xpi-release" />
-      <echo message="Calling ${plugin.build.script} for ${target.name}" />
-      <ant inheritAll="false" antfile="${plugin.build.dir}/build.xml" target="${target.name}" />
-      <copy todir="${staging.dir}" flatten="true">
-        <fileset dir="${plugin.build.dir}">
-          <include name="**/brightest.xpi" />
-        </fileset>
-      </copy>
-    </target>
+	<target name="make-client" depends="compile-client, jar-client" description="Builds the client jar">
+	</target>
 
-	<target name="run-setup" >
+	<target name="make-plugin" depends="init" description="Builds the client plugin used as BrighTest IDE">
+		<property name="target.name" value="make-xpi-release" />
+		<echo message="Calling ${plugin.build.script} for ${target.name}" />
+		<ant inheritAll="false" antfile="${plugin.build.dir}/build.xml" target="${target.name}" />
+		<copy todir="${staging.dir}" flatten="true">
+			<fileset dir="${plugin.build.dir}">
+				<include name="**/brightest.xpi" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="run-setup">
 		<path id="run.class.path">
 			<path refid="compile.class.path" />
 			<path location="${staging.dir}/${core.jar}" />
@@ -100,64 +100,60 @@
 			<path location="{lib.dir}" />
 		</path>
 	</target>
-	
-    <target name="run-core" depends="make-core, run-setup" description="Runs the core in headless mode">
-		<input
-		    message="Enter qualified path of test folder"
-		    addproperty="test.name"
-			defaultvalue="./src/core/resource/test/GoogleSearch.xls"
-		  />
-		<input
-		    message="Enter qualified path of results folder"
-		    addproperty="report.path"
-			defaultvalue="./dist/report"
-		  />
 
-    	<mkdir dir="${report.path}" />
-        <echo> Starting execution of tests at ${test.name} using HeadlessRunner</echo>
-    	<java fork="true" classpathref="run.class.path" classname="com.imaginea.brightest.util.HeadlessRunner">
-			<arg line="-r ${report.path} ${test.name}"/>
+	<target name="run-core" depends="make-core, run-setup" description="Runs the core in headless mode">
+		<input message="Enter qualified path of test folder" addproperty="test.name" defaultvalue="./src/core/resource/test/GoogleSearch.xls" />
+		<input message="Enter qualified path of results folder" addproperty="report.path" defaultvalue="./dist/report" />
+
+		<mkdir dir="${report.path}" />
+		<echo> Starting execution of tests at ${test.name} using HeadlessRunner</echo>
+		<java fork="true" classpathref="run.class.path" classname="com.imaginea.brightest.util.HeadlessRunner">
+			<arg line="-r ${report.path} ${test.name}" />
 		</java>
-    	
-    </target>
+
+	</target>
 
 
 	<target name="run-unit" depends="make-core, run-setup" description="Runs brightest tests as JUnit with folder controlled by brightes.path">
 		<junit printsummary="on" fork="false" haltonfailure="no" showoutput="true">
-			<classpath refid="run.class.path"></classpath>
+			<classpath refid="run.class.path">
+			</classpath>
 			<sysproperty key="brightest.configuration.file" value="./demo/demo.properties" />
-			<formatter type="xml"/>
-			<test name="com.imaginea.brightest.test.BrightestTestSuite" >
+			<formatter type="xml" />
+			<test name="com.imaginea.brightest.junit.JUnitTestSuiteAdapter">
 			</test>
 		</junit>
-		
-		 <junitreport todir="${staging.dir}">
-		      <fileset dir="${basedir}">
-		        <include name="TEST-*.xml"/>
-		      </fileset>
-		      <report format="frames" todir="${staging.dir}/html"/>
-		    </junitreport>
+
+		<junitreport todir="${staging.dir}">
+			<fileset dir="${basedir}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${staging.dir}/html" />
+		</junitreport>
+		<echo>Reports generated at ${staging.dir}/html/</echo>
 	</target>
-	
+
 	<target name="clean" description="Cleans up all the staging resources">
 		<delete dir="${staging.dir}" />
-        <ant inheritAll="false" antfile="${plugin.build.dir}/build.xml" target="clean" />
+		<ant inheritAll="false" antfile="${plugin.build.dir}/build.xml" target="clean" />
 	</target>
 	<taskdef resource="testngtasks" classpath="${lib.dir}/testng-6.3.1.jar" />
+
+
 	<target name="ng-test" depends="clean,make-core, run-setup">
-			<delete dir="${REPORT}" />
-			<mkdir dir="${REPORT}" />
-			<mkdir dir="${REPORT}/TestNG-report" />
-			<mkdir dir="${staging.dir}/testcases" />
-			<copy todir="${staging.dir}/testcases" flatten="true">
-				<fileset dir="${testcase.folder.path}">
-		          <include name="**/*.*" />
-		        </fileset>
-			</copy>
-			<testng outputdir="${REPORT}/TestNG-report" classpathref="run.class.path">
-				<!-- <jvmarg value="-Xdebug" />
+		<delete dir="${REPORT}" />
+		<mkdir dir="${REPORT}" />
+		<mkdir dir="${REPORT}/TestNG-report" />
+		<mkdir dir="${staging.dir}/testcases" />
+		<copy todir="${staging.dir}/testcases" flatten="true">
+			<fileset dir="${testcase.folder.path}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<testng outputdir="${REPORT}/TestNG-report" classpathref="run.class.path">
+			<!-- <jvmarg value="-Xdebug" />
 				 <jvmarg value="-Xrunjdwp:transport=dt_socket,suspend=y,address=7070,server=y" /> -->
-				<xmlfileset dir="${basedir}" includes="testng.xml" />
-			</testng>
-		</target>
+			<xmlfileset dir="${basedir}" includes="testng.xml" />
+		</testng>
+	</target>
 </project>

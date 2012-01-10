@@ -22,10 +22,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.imaginea.brightest;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.imaginea.brightest.junit;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
@@ -36,35 +33,40 @@ import junit.framework.TestSuite;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.imaginea.brightest.format.CSVFormatHandler;
+import com.imaginea.brightest.ApplicationPreferences;
+import com.imaginea.brightest.ExecutionContext;
 import com.imaginea.brightest.format.FormatHandler;
 import com.imaginea.brightest.format.UnknownFormatException;
-import com.imaginea.brightest.format.XLSFormatHandler;
+import com.imaginea.brightest.test.CommandBasedTest;
+import com.imaginea.brightest.test.CommandBasedTestGroup;
 
 /**
  * Manager for all tests, takes care of saving them, loading them and the other fun stuff.
  */
-public class TestManager {
-    private static final Log LOG = LogFactory.getLog(TestManager.class);
-    private final List<FormatHandler> formatHandlers = new ArrayList<FormatHandler>();
+public class JUnitTestManager {
+    private static final Log LOG = LogFactory.getLog(JUnitTestManager.class);
 
-    public TestManager() {
-        formatHandlers.add(new XLSFormatHandler());
-        formatHandlers.add(new CSVFormatHandler());
+    public JUnitTestManager() {
     }
 
     public TestSuite loadSuite(String filePath) {
-        TestSuite suite = null;
-        for (FormatHandler formatHandler : formatHandlers) {
-            suite = formatHandler.loadSuite(filePath);
+        TestSuite testSuite = new JUnitTestSuiteAdapter();
+        CommandBasedTestGroup suite = null;
+        for (FormatHandler formatHandler : ExecutionContext.getInstance().getFormatHandlers()) {
+            suite = formatHandler.loadTestSuite(filePath);
             if (suite != null) {
                 break;
             }
         }
         if (suite == null) {
             throw new UnknownFormatException(filePath);
+        } else {
+            for (CommandBasedTest test : suite.getTests()) {
+                JUnitTestCaseAdapter testCase = new JUnitTestCaseAdapter(test);
+                testSuite.addTest(testCase);
+            }
         }
-        return suite;
+        return testSuite;
     }
 
     public TestResult runTest(ApplicationPreferences preferences) {
@@ -112,13 +114,5 @@ public class TestManager {
                 succesful = false;
             }
         });
-    }
-
-    protected void clearFormatHandlers() {
-        this.formatHandlers.clear();
-    }
-
-    protected void addFormatHandler(FormatHandler formatHandler) {
-        this.formatHandlers.add(formatHandler);
     }
 }

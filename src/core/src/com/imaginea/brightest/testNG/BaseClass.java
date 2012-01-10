@@ -1,13 +1,10 @@
-package com.imaginea.brightest.driver;
-
-import java.net.MalformedURLException;
-import java.net.URL;
+package com.imaginea.brightest.testNG;
 
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -28,12 +25,10 @@ public class BaseClass {
 		capability.setPlatform(Platform.ANY);
 		//context.startServer();
 		try {
-			WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
+            WebDriver driver = new FirefoxDriver(capability);
 			selenium=new WebDriverBackedSelenium(driver, "http://www.google.com");
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			Assert.fail("Failed due to malformed URL exception.");
 		} catch (Exception e) {
+            e.printStackTrace();
 			Assert.fail("Failed due to: "+ e.toString());
 		}
 		

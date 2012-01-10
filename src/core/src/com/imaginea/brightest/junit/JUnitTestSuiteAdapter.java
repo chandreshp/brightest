@@ -1,4 +1,4 @@
-package com.imaginea.brightest.test;
+package com.imaginea.brightest.junit;
 
 import java.io.File;
 
@@ -10,20 +10,22 @@ import org.junit.runner.RunWith;
 
 import com.imaginea.brightest.ApplicationPreferences;
 import com.imaginea.brightest.ExecutionContext;
-import com.imaginea.brightest.TestManager;
 import com.imaginea.brightest.format.UnknownFormatException;
 import com.imaginea.brightest.util.Util;
 
-@RunWith(BrightestTestRunner.class)
-public class BrightestTestSuite extends TestSuite {
-    private static final Log LOG = LogFactory.getLog(BrightestTestSuite.class);
+/**
+ * Adapter to create a testsuite from a test group
+ */
+@RunWith(JUnitTestRunner.class)
+public class JUnitTestSuiteAdapter extends TestSuite {
+    private static final Log LOG = LogFactory.getLog(JUnitTestSuiteAdapter.class);
     private static int suiteCounter = 1;
 
-    public BrightestTestSuite() {
+    public JUnitTestSuiteAdapter() {
         this(false);
     }
 
-    public BrightestTestSuite(boolean discover) {
+    public JUnitTestSuiteAdapter(boolean discover) {
         init(discover);
     }
 
@@ -42,7 +44,7 @@ public class BrightestTestSuite extends TestSuite {
     }
 
     private void discoverAndAddTests(String testFolderOrFile) {
-        TestManager mgr = new TestManager();
+        JUnitTestManager mgr = new JUnitTestManager();
         File file = new File(testFolderOrFile);
         if (file.isDirectory()) {
             File[] files = file.listFiles();
