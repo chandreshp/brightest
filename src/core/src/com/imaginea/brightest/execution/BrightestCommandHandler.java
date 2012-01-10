@@ -87,4 +87,18 @@ public class BrightestCommandHandler {
     public void waitForElementPresent(ExecutionContext context, Command command) {
         context.getSelenium().waitForCondition("selenium.isElementPresent('" + command.getRuntimeArgument() + "')", context.getPreferences().getTimeout());
     }
+
+    @CommandInfo
+    public void clickForAjaxResponse(ExecutionContext context, Command command) {
+        context.getSelenium().click(command.getRuntimeArgument());
+    }
+
+    @CommandInfo
+    public void waitForAjaxResponse(ExecutionContext context, Command command) {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }
