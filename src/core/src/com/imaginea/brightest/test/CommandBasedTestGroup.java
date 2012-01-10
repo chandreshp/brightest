@@ -32,4 +32,12 @@ public class CommandBasedTestGroup {
     public String toString() {
         return String.format("Group[%s, tests [%s]]", this.groupName, this.tests);
     }
+
+    public int countTestCases() {
+        return tests.size();
+    }
+
+    public CommandBasedTest testAt(int i) {
+        return tests.get(i);
+    }
 }

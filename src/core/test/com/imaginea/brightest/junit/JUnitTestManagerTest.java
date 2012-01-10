@@ -22,7 +22,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.imaginea.brightest;
+package com.imaginea.brightest.junit;
 
 import junit.framework.Assert;
 import junit.framework.TestSuite;
@@ -32,8 +32,9 @@ import org.junit.Test;
 import com.imaginea.brightest.format.FormatHandler;
 import com.imaginea.brightest.format.UnknownFormatException;
 import com.imaginea.brightest.test.CommandBasedTest;
+import com.imaginea.brightest.test.CommandBasedTestGroup;
 
-public class TestManagerTest {
+public class JUnitTestManagerTest {
     /**
      * Tests the addFormatter and formatter callbacks
      * 
@@ -41,18 +42,18 @@ public class TestManagerTest {
      */
     @Test
     public void loadSuite() throws Exception {
-        TestManager fixture = new TestManager();
-        TestSuite dummySuite = new TestSuite();
+        JUnitTestManager fixture = new JUnitTestManager();
+        CommandBasedTestGroup dummySuite = new CommandBasedTestGroup();
         String testFile = "abc.1223";
         FormatHandler formatHandler = new DummyFormatHandler(dummySuite, testFile);
-        fixture.addFormatHandler(formatHandler);
+        fixture.resetFormatHandlers(formatHandler);
         TestSuite suite = fixture.loadSuite(testFile);
-        Assert.assertEquals(dummySuite, suite);
+        Assert.assertTrue(suite instanceof JUnitTestSuiteAdapter);
     }
 
     @Test(expected = UnknownFormatException.class)
     public void loadSuiteUnknown() throws Exception {
-        TestManager fixture = new TestManager();
+        JUnitTestManager fixture = new JUnitTestManager();
         String testFile = "abc.1223";
         fixture.loadSuite(testFile);
     }
@@ -61,10 +62,10 @@ public class TestManagerTest {
      * Static mock for FormatHandler
      */
     private static class DummyFormatHandler extends FormatHandler {
-        private final TestSuite dummyTestSuite;
+        private final CommandBasedTestGroup dummyTestSuite;
         private final String fileName;
 
-        private DummyFormatHandler(TestSuite dummyTestSuite, String fileName) {
+        private DummyFormatHandler(CommandBasedTestGroup dummyTestSuite, String fileName) {
             this.dummyTestSuite = dummyTestSuite;
             this.fileName = fileName;
         }
@@ -76,15 +77,14 @@ public class TestManagerTest {
         }
 
         @Override
-        protected TestSuite loadSuiteInternal(String fileName) {
+        protected CommandBasedTestGroup loadTestSuiteInternal(String fileName) {
             Assert.assertEquals(this.fileName, fileName);
             return dummyTestSuite;
         }
 
 		@Override
-		protected CommandBasedTest loadDriverTest(String fileName) {
-			// TODO Auto-generated method stub
-			return null;
+        protected CommandBasedTest loadTestCaseInternal(String fileName) {
+            throw new UnsupportedOperationException();
 		}
     }
 }

@@ -28,13 +28,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import junit.framework.TestSuite;
-
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.imaginea.brightest.Command;
-import com.imaginea.brightest.test.CommandBasedTestCase;
+import com.imaginea.brightest.test.CommandBasedTest;
+import com.imaginea.brightest.test.CommandBasedTestGroup;
 import com.imaginea.brightest.util.Util;
 
 public class XLSFormatHandlerTest {
@@ -77,12 +76,11 @@ public class XLSFormatHandlerTest {
         File tmpInputFile = createDummyFile();
         Util.copyStream(Util.getResourceAsStream("test/GoogleSearch.xls"), new FileOutputStream(tmpInputFile));
         XLSFormatHandler formatHandler = new XLSFormatHandler();
-        TestSuite suite = formatHandler.loadSuite(tmpInputFile.getAbsolutePath());
+        CommandBasedTestGroup suite = formatHandler.loadTestSuite(tmpInputFile.getAbsolutePath());
         Assert.assertNotNull(suite);
         Assert.assertEquals(1, suite.countTestCases());
-        junit.framework.Test test = suite.testAt(0);
-        CommandBasedTestCase castedTest = (CommandBasedTestCase) test;
-        Assert.assertEquals(2, castedTest.commandCount());
+        CommandBasedTest test = suite.testAt(0);
+        Assert.assertEquals(2, test.commandCount());
     }
 
     private File createDummyFile() throws IOException {

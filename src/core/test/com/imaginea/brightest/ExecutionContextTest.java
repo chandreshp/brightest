@@ -32,7 +32,7 @@ import com.imaginea.brightest.execution.PreferenceListener;
 public class ExecutionContextTest {
     @Test
     public void listenerCallback() {
-        ExecutionContext context = new ExecutionContext();
+        ExecutionContext context = ExecutionContext.getNonStaticInstance();
         ApplicationPreferences newPreference = new ApplicationPreferences();
         StaticMockPreferenceListener listener = new StaticMockPreferenceListener();
         context.registerListener(listener);
@@ -43,7 +43,7 @@ public class ExecutionContextTest {
     @Test
     public void putGetValue() {
         String key = "key";
-        ExecutionContext context = new ExecutionContext();
+        ExecutionContext context = ExecutionContext.getNonStaticInstance();
         context.putValue(key, this.getClass().getSimpleName());
         Assert.assertEquals(this.getClass().getSimpleName(), context.getValue(key));
     }
