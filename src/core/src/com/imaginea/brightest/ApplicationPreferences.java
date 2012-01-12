@@ -1,5 +1,6 @@
 package com.imaginea.brightest;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -29,6 +30,7 @@ public class ApplicationPreferences {
     private String reportPath;
     private String dslPath;
     private String timeout;
+    private final String translatePaths = "true";
 
     public ApplicationPreferences() {
         host = "localhost";
@@ -44,7 +46,7 @@ public class ApplicationPreferences {
         Properties properties = new Properties();
         try {
             properties.load(new FileInputStream(filePath));
-
+            configurationPath = filePath;
             // fill in all string properties reflectively
             Field[] fields = this.getClass().getDeclaredFields();
             for (Field field : fields) {
@@ -79,8 +81,13 @@ public class ApplicationPreferences {
         }
     }
 
+    public boolean shouldTranslatePaths() {
+        // true if no translate path or if translate path set to true
+        return (translatePaths == null || translatePaths.trim().length() == 0) || Boolean.valueOf(translatePaths);
+    }
+
     public String getDslPath() {
-        return dslPath;
+        return translateRelativeToAbsolute(dslPath);
     }
 
     public ApplicationPreferences setDslPath(String dslPath) {
@@ -125,7 +132,7 @@ public class ApplicationPreferences {
     }
 
     public String getTestPath() {
-        return testPath;
+        return translateRelativeToAbsolute(testPath);
     }
 
     public ApplicationPreferences setTestPath(String testPath) {
@@ -142,6 +149,7 @@ public class ApplicationPreferences {
         return this;
     }
 
+
     public String getConfigurationPath() {
         return configurationPath;
     }
@@ -152,7 +160,7 @@ public class ApplicationPreferences {
     }
 
     public String getReportPath() {
-        return reportPath;
+        return translateRelativeToAbsolute(reportPath);
     }
 
     public ApplicationPreferences setReportPath(String reportPath) {
@@ -192,4 +200,24 @@ public class ApplicationPreferences {
         }
     }
 
+    private String translateRelativeToAbsolute(String relativePath) {
+        String filePath = relativePath;
+        if (shouldTranslatePaths()) {
+            if (Util.isNotBlank(relativePath)) {
+                relativePath = relativePath.trim();
+                if (Util.isNotBlank(configurationPath)) {
+                    boolean isAbsolutePath = (relativePath.startsWith("/") || relativePath.startsWith(File.separator) || relativePath.contains(":"));
+                    if (isAbsolutePath) {
+                        filePath = relativePath;
+                    } else {
+                        String configurationPathParent = new File(configurationPath).getParent();
+                        filePath = ((configurationPathParent == null) ? "" : (configurationPathParent + File.separator)) + relativePath;
+                    }
+                } else {
+                    filePath = relativePath;
+                }
+            }
+        }
+        return filePath;
+    }
 }
