@@ -35,7 +35,7 @@ public class UtilTest {
     @Test
     public void getContents() throws Exception {
         File file = createDummyFile();
-        Util.copyStream(Util.getResourceAsStream("com/imaginea/brightest/util/testContents.txt"), new FileOutputStream(file));
+        Util.copyStream(Util.getResourceAsStream("test/testcontents.txt"), new FileOutputStream(file));
         String contents = Util.getContents(file.getPath());
         Assert.assertEquals("TestContents", contents);
     }

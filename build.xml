@@ -6,6 +6,7 @@
 	<property name="client.jar" value="brightest-client.jar" />
 
 	<property name="core.src.dir" value="${basedir}/src/core/src" />
+	<property name="core.test.src.dir" value="${basedir}/src/core/test" />
 	<property name="core.resources.dir" value="${basedir}/src/core/resource" />
 	<property name="client.src.dir" value="${basedir}/src/client/src" />
 	<property name="plugin.build.dir" value="${basedir}/src/plugin/" />
@@ -15,9 +16,12 @@
 	<property name="staging.dir" value="${basedir}/dist" />
 	<property name="staging.core.dir" value="${staging.dir}/core" />
 	<property name="staging.client.dir" value="${staging.dir}/client" />
+	<property name="staging.core.dir" value="${staging.dir}/coretest" />
 
 	<property name="client.classes.dir" value="${staging.client.dir}/classes" />
 	<property name="core.classes.dir" value="${staging.core.dir}/classes" />
+	<property name="core.test.classes.dir" value="${staging.core.dir}/test-classes" />
+	<property name="core.test.report.dir" value="${staging.core.dir}/test-reports" />
 	<property name="REPORT" value="${basedir}/test-report" />
 
 	<target name="init">
@@ -33,9 +37,16 @@
 	</target>
 
 	<!-- compile -->
-	<target name="compile-client" depends="init">
-		<mkdir dir="${client.classes.dir}" />
-		<javac srcdir="${client.src.dir}" destdir="${client.classes.dir}" classpathref="compile.class.path" nowarn="yes" debug="yes">
+	<target name="compile-core-test" depends="init, compile-core">
+		<path id="test.class.path">
+			<path refid="compile.class.path" />
+			<path location="${core.classes.dir}" />
+			<path location="${core.resources.dir}" />
+			<path location="{lib.dir}" />
+		</path>
+
+		<mkdir dir="${core.test.classes.dir}" />
+		<javac srcdir="${core.test.src.dir}" destdir="${core.test.classes.dir}" classpathref="test.class.path" nowarn="yes" debug="yes">
 			<!-- <compilerarg value="-Xlint:unchecked"/> -->
 		</javac>
 	</target>
@@ -65,22 +76,44 @@
 		</jar>
 	</target>
 
-	<target name="jar-client" depends="init">
-		<jar jarfile="${staging.dir}/${client.jar}">
-			<fileset dir="${client.classes.dir}">
-				<include name="**/*.class" />
-			</fileset>
-		</jar>
+	<target name="all" depends="clean, make-core, test, make-plugin" description="Builds the core and plugin" >
 	</target>
-
-	<target name="all" depends="clean, make-core, make-client, make-plugin" description="Builds the core, client and plugin" />
-
+	
 	<target name="make-core" depends="compile-core, jar-core" description="Builds the core jar">
 	</target>
 
-	<target name="make-client" depends="compile-client, jar-client" description="Builds the client jar">
+	<target name="test" depends="compile-core-test, junit-core" description="Runs the junit tests for all modules" >
 	</target>
+	
+	<target name="junit-core" depends="compile-core-test">
+		<property name="core.test.report.xml.dir" value="${core.test.report.dir}/xml" />
+		<property name="core.test.report.html.dir" value="${core.test.report.dir}/html" />
+		<path id="run.test.class.path">
+			<path refid="test.class.path" />
+			<path location="${core.test.classes.dir}" />
+		</path>
+		<mkdir dir="${core.test.report.xml.dir}" />
+		<junit printsummary="on" fork="false" haltonfailure="no" showoutput="true">
+			<classpath refid="run.test.class.path">
+			</classpath>
+			<sysproperty key="brightest.configuration.file" value="./demo/demo.properties" />
+			<formatter type="xml" />
+			<batchtest todir="${core.test.report.xml.dir}">
+				<fileset dir="${core.test.src.dir}">
+					<exclude name="**/batchTestNG/*.java" />
+				</fileset>
+			</batchtest>			
+		</junit>
+		<junitreport todir="${core.test.report.dir}">
+			<fileset dir="${core.test.report.xml.dir}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${core.test.report.html.dir}" />
+		</junitreport>
+		<echo>Reports generated at ${core.test.report.html.dir}/index.html</echo>
 
+	</target>
+	
 	<target name="make-plugin" depends="init" description="Builds the client plugin used as BrighTest IDE">
 		<property name="target.name" value="make-xpi-release" />
 		<echo message="Calling ${plugin.build.script} for ${target.name}" />
@@ -114,7 +147,16 @@
 	</target>
 
 
-	<target name="run-unit" depends="make-core, run-setup" description="Runs brightest tests as JUnit with folder controlled by brightes.path">
+	<target name="run-unit" depends="make-core, run-setup" description="Runs brightest tests as JUnit with folder and other properties controlled by the properties file pointed to by brightest.configuration.file">
+		<delete>
+			<fileset dir="${staging.dir}">
+			    <include name="TEST-*.xml"/>
+			</fileset>
+			<fileset dir="${staging.dir}/html">
+			    <include name="**/*.*"/>
+			</fileset>
+		</delete>
+
 		<junit printsummary="on" fork="false" haltonfailure="no" showoutput="true">
 			<classpath refid="run.class.path">
 			</classpath>
@@ -130,7 +172,7 @@
 			</fileset>
 			<report format="frames" todir="${staging.dir}/html" />
 		</junitreport>
-		<echo>Reports generated at ${staging.dir}/html/</echo>
+		<echo>Reports generated at ${staging.dir}/html/index.html</echo>
 	</target>
 
 	<target name="clean" description="Cleans up all the staging resources">

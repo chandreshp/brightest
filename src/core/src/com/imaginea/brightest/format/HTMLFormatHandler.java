@@ -2,6 +2,7 @@ package com.imaginea.brightest.format;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Stack;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -9,6 +10,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -41,7 +43,9 @@ public class HTMLFormatHandler extends FormatHandler {
 
     @Override
     protected CommandBasedTestGroup loadTestSuiteInternal(String fileName) {
-        throw new UnsupportedOperationException();
+        CommandBasedTestGroup group = new CommandBasedTestGroup();
+        group.addTest(loadTestCaseInternal(fileName));
+        return group;
     }
 
     @Override
@@ -131,6 +135,9 @@ public class HTMLFormatHandler extends FormatHandler {
             }
         }
 
+        public InputSource resolveEntity(String publicId, String systemId) {
+            return new InputSource(new StringReader(""));
+        }
         /**
          * @see org.xml.sax.ErrorHandler#error(org.xml.sax.SAXParseException)
          */

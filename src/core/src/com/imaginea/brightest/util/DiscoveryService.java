@@ -27,6 +27,7 @@ package com.imaginea.brightest.util;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,12 +36,16 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Simple implementation to discover classes in the classpath matching given package name
  * 
  * @author apurba
  */
 public class DiscoveryService {
+    private static final Log LOG = LogFactory.getLog(DiscoveryService.class);
     List<Resolver> classResolvers = new ArrayList<Resolver>();
 
     public DiscoveryService() {
@@ -54,7 +59,28 @@ public class DiscoveryService {
      * @return
      */
     public List<Class<?>> discoverClasses(String packageName) {
-        String classPath = System.getProperty("java.class.path");
+        List<Class<?>> discoveredClasses = discoverClasses(packageName, System.getProperty("java.class.path"));
+        // hack for antclassloader, do not want any compile time dependencies
+        if (discoveredClasses.isEmpty()) {
+            ClassLoader loader = this.getClass().getClassLoader();
+            String loaderClazzName = loader.getClass().getName();
+            if (loaderClazzName.contains("org.apache.tools.ant")) {
+                Class<?> loaderClazz = loader.getClass();
+                try {
+                    Method getClassPathMethod = loaderClazz.getMethod("getClasspath", (Class<?>[]) null);
+                    String antClassPath = (String) getClassPathMethod.invoke(loader, (Object[]) null);
+                    if (antClassPath != null) {
+                        discoveredClasses.addAll(discoverClasses(packageName, antClassPath));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return discoveredClasses;
+    }
+
+    private List<Class<?>> discoverClasses(String packageName, String classPath) {
         String[] pathElements = classPath.split(File.pathSeparator);
         List<Class<?>> discoveredClasses = new ArrayList<Class<?>>();
         for (String pathElement : pathElements) {
@@ -62,7 +88,6 @@ public class DiscoveryService {
         }
         return discoveredClasses;
     }
-
     /**
      * Gets the classes for the given path and package
      * 
@@ -130,10 +155,10 @@ public class DiscoveryService {
                             classList.add(Class.forName(qualifiedClassName));
                         } catch (NoClassDefFoundError e) {
                             // this is a crazy class, so ignore this with just logging
-                            System.err.println("Could not load " + qualifiedClassName);
+                            LOG.debug("Could not load " + qualifiedClassName);
                         } catch (UnsatisfiedLinkError e) {
                             // this is a crazy class, so ignore this with just logging
-                            System.err.println("Could not load " + qualifiedClassName);
+                            LOG.debug("Could not load " + qualifiedClassName);
                         }
                     }
                 }

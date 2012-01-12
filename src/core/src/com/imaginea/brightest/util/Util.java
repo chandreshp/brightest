@@ -76,7 +76,7 @@ public class Util {
         } else if (value1.trim().length() == 0) {
             return (value2.trim().length() == 0);
         } else {
-            return value2.equals(value1);
+            return value1.equals(value2);
         }
     }
 }
