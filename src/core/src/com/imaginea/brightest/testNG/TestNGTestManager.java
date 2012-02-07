@@ -1,25 +1,23 @@
 package com.imaginea.brightest.testNG;
 
 import com.imaginea.brightest.ExecutionContext;
-import com.imaginea.brightest.format.FormatHandler;
 import com.imaginea.brightest.format.UnknownFormatException;
 import com.imaginea.brightest.test.CommandBasedTest;
+import com.imaginea.brightest.test.TestManager;
 import com.thoughtworks.selenium.Selenium;
 
-public class TestNGTestManager {
+/**
+ * Understands TestNG test.
+ */
+public class TestNGTestManager extends TestManager {
     private CommandBasedTest test;
-    private final ExecutionContext context;
+
 	public TestNGTestManager(ExecutionContext context) {
-		this.context=context;
+        super(context);
 	}
 
 	public void loadTest(String filename) {
-        for (FormatHandler formatHandler : this.context.getFormatHandlers()) {
-			this.test = formatHandler.loadTestCase(filename);
-			if (this.test != null) {
-				break;
-			}
-		}
+        this.test = loadIndividualTest(filename);
 		if (this.test == null) {
 			throw new UnknownFormatException(filename);
 		}
@@ -28,7 +26,6 @@ public class TestNGTestManager {
 	public void runTest(Selenium selenium) {
 		context.getExecutor().setExceutionContext(context);
         context.setSelenium(selenium);
-		test.setCommandExecutor(context.getExecutor());
-		test.runTest(selenium);
+        test.runTest(selenium, context.getExecutor());
 	}
 }

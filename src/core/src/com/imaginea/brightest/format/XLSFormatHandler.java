@@ -85,8 +85,13 @@ public class XLSFormatHandler extends FormatHandler {
         return testCase;
     }
 
-    private Command loadCommand(CommandRow commandRow) {
-        return commandRow.getCommand();
+    private Command loadCommand(XLSCommandRow commandRow) {
+        try {
+            return commandRow.getCommand();
+        } catch (RuntimeException exc) {
+            LOGGER.error("Problems with row " + commandRow.row.getRowNum() + " of worksheet " + commandRow.parent);
+            throw exc;
+        }
     }
 
     private static HSSFCell cellAt(HSSFRow row, int cellNumber) {
@@ -180,9 +185,9 @@ public class XLSFormatHandler extends FormatHandler {
         }
 
         @Override
-        public CommandRow nextElement() {
+        public XLSCommandRow nextElement() {
             HSSFRow row = testSheet.getRow(rowIndex++);
-            return new CommandRow(row, this);
+            return new XLSCommandRow(row, this);
         }
 
         private String getSheetName() {
@@ -223,29 +228,21 @@ public class XLSFormatHandler extends FormatHandler {
         }
     }
 
-    protected static class CommandRow {
-        private static enum LegacyRowFormat {
-            PURPOSE, STEPS;
-        }
-
-        private static enum CommandRowFormat {
-            STEP, ARGUMENT, OPTIONAL_ARG;
-        }
-
+    protected static class XLSCommandRow extends CommandRow {
+        private final TestCaseSheet parent;
         private final HSSFRow row;
-        private final TestCaseSheet parentSheet;
 
-        public CommandRow() {
+        public XLSCommandRow() {
             this(null, null);
         }
 
-        public CommandRow(HSSFRow row, TestCaseSheet testCaseSheet) {
+        public XLSCommandRow(HSSFRow row, TestCaseSheet parent) {
+            super();
             this.row = row;
-            this.parentSheet = testCaseSheet;
+            this.parent = parent;
         }
 
         public Command getCommand() {
-            try {
                 Command command = null;
                 if (isNotBlank(valueOf(cellAt(row, CommandRowFormat.STEP.ordinal())))) {
                     command = new Command();
@@ -257,42 +254,6 @@ public class XLSFormatHandler extends FormatHandler {
                     command = parse(consCommand);
                 }
                 return command;
-            } catch (RuntimeException exc) {
-                LOGGER.error("Problems with row " + row.getRowNum() + " of worksheet " + parentSheet);
-                throw exc;
-            }
-        }
-
-        protected Command parse(String commandString) {
-            commandString = commandString.trim();
-            String[] tokens = parseString(commandString);
-            Command command = new Command();
-            command.setName(tokens[0]).setArgument(tokens[1]).setOptionalArgument(tokens[2]);
-            return command;
-        }
-
-        private String[] parseString(String command) {
-            command = command.trim();
-            String[] vals = new String[3];
-            int cmdNameEnd = command.indexOf('(');
-            vals[0] = command.substring(0, cmdNameEnd);
-            command = command.substring(cmdNameEnd + 1);
-            command = command.substring(0, command.length() - 1);
-            int argEnd = -1;
-            if ((argEnd = command.lastIndexOf('|')) != -1) {
-            } else {
-                argEnd = command.lastIndexOf(',');
-            }
-            if (argEnd != -1) {
-                vals[1] = command.substring(0, argEnd).trim();
-                vals[2] = command.substring(argEnd + 1).trim();
-            } else {
-                vals[1] = command.substring(0);
-                if (vals[1].trim().length() == 0) {
-                    vals[1] = null;
-                }
-            }
-            return vals;
         }
     }
 

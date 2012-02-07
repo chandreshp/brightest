@@ -42,17 +42,14 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 
 /**
- * Someday we will have ExcelWriter and ExcelReader and will delete
- * com.imaginea.brightest.tester.testscript.source.Excel
- * 
- * @author apurba
+ * ExcelWriter responsible for writing commands to excel files
  */
 public class ExcelWriter extends AbstractWriter {
     private final String outputFileName;
     private OutputStream outputStream = null;
 
     /**
-     * Constructor used to set both source and destination filenames
+     * Constructor used to set destination filename
      * 
      * @param outputFileName the destination file
      */
@@ -61,8 +58,6 @@ public class ExcelWriter extends AbstractWriter {
     }
 
     /**
-     * TODO refactor and make it human
-     * 
      * @param rawCommands
      */
     public void writeCommands(String[] rawCommands) {
@@ -76,9 +71,9 @@ public class ExcelWriter extends AbstractWriter {
             // add the test case
             addTestCase(rawCommands, workBook);
             write(workBook);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+        } catch (Exception exc) {
+            exc.printStackTrace();
+            throw new RuntimeException(exc);
         }
     }
 
@@ -91,8 +86,8 @@ public class ExcelWriter extends AbstractWriter {
                 write(workBook);
             }
         } catch (Exception exc) {
-            // YES, we are eating the exception as I do not want my plugin to be compromised
             exc.printStackTrace();
+            throw new RuntimeException(exc);
         }
     }
 
@@ -182,7 +177,7 @@ public class ExcelWriter extends AbstractWriter {
                     outputStream.close();
                 }
             } catch (IOException exc) {
-                // ignoring the exception with just locking as we were unable to close the stream, nothing more
+                // ignoring the exception with just logging as we were unable to close the stream, nothing more
                 // dangerous
                 exc.printStackTrace();
             }

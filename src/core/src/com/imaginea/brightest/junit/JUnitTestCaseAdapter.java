@@ -21,7 +21,6 @@ import junit.framework.TestCase;
 
 import com.imaginea.brightest.Command;
 import com.imaginea.brightest.ExecutionContext;
-import com.imaginea.brightest.execution.CommandExecutor;
 import com.imaginea.brightest.test.CommandBasedTest;
 
 /**
@@ -35,7 +34,7 @@ public class JUnitTestCaseAdapter extends TestCase {
     }
 
     public void runBare() throws Throwable {
-        delegate.runTest(ExecutionContext.getInstance().getSelenium());
+        delegate.runTest(ExecutionContext.getInstance().getSelenium(), ExecutionContext.getInstance().getExecutor());
     }
 
     public String toString() {
@@ -48,10 +47,6 @@ public class JUnitTestCaseAdapter extends TestCase {
 
     public int commandCount() {
         return delegate.commandCount();
-    }
-
-    public void setCommandExecutor(CommandExecutor executor) {
-        delegate.setCommandExecutor(executor);
     }
 
     @Override

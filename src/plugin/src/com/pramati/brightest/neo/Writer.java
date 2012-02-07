@@ -24,11 +24,21 @@
  */
 package com.pramati.brightest.neo;
 
-public interface ResultWriter {
+/**
+ * Interface for all writers
+ */
+public interface Writer {
     /**
      * Writes results
      * 
      * @param rawResults
      */
     void writeResults(final String[] rawResults);
+
+    /**
+     * Writes commands
+     * 
+     * @param rawCommands
+     */
+    public void writeCommands(String[] rawCommands);
 }

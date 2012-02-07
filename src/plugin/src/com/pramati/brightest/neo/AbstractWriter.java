@@ -39,7 +39,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 /**
  * @author apurba
  */
-public abstract class AbstractWriter implements ResultWriter {
+public abstract class AbstractWriter implements Writer {
     protected static class ResultInfo {
         protected final String testFileName;
         protected String failureMessage = null;

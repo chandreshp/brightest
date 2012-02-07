@@ -38,7 +38,7 @@ import org.junit.Test;
 /**
  * @author apurba
  */
-public class TestRunnerTest {
+public class TestAdapterTest {
     private File tempTestFile = null;
 
     @Before
@@ -58,12 +58,12 @@ public class TestRunnerTest {
 
     @Test
     public void testReadingCommands() throws Exception {
-        TestRunner runner = new TestRunner();
-        runner.processFile(tempTestFile.getAbsolutePath());
-        while (runner.isProcessed() == false) {
+        TestAdapter adapter = new TestAdapter();
+        adapter.processFile(tempTestFile.getAbsolutePath());
+        while (adapter.isProcessed() == false) {
             // do nothing
         }
-        String commands = runner.getJavascriptConstructForTestSuite();
+        String commands = adapter.getJavascriptConstructForTestSuite();
         System.out.println(commands);
         Assert.assertNotNull(commands);
     }
@@ -71,28 +71,33 @@ public class TestRunnerTest {
     @Test
     public void testWritingResults() throws IOException {
         String resultStr = tempTestFile.getAbsolutePath() + "~2~Element link=Pramati Technologies not found**$$** 0~3**$$** 1~3";
-        TestRunner runner = new TestRunner();
+        TestAdapter adapter = new TestAdapter();
         File tempResultsFile = File.createTempFile("testResults", ".xls");
         tempResultsFile.deleteOnExit();
-        runner.writeResults(tempResultsFile.getAbsolutePath(), new String[] { resultStr });
-        // TODO add excel sheet reading part to validate that this is correct
-        System.out.println("Results computed");
+        adapter.writeResults(tempResultsFile.getAbsolutePath(), new String[] { resultStr });
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            Assert.fail("Could not wait for completion");
+        }
+        // TODO need a better check which can read the contents
+        Assert.assertFalse("Should have written some results", 0 == tempResultsFile.length());
     }
 
     @Test
     public void testGetProperties() throws IOException {
-        TestRunner runner = new TestRunner();
+        TestAdapter adapter = new TestAdapter();
         StringBuilder locationBuilder = new StringBuilder();
         locationBuilder.append(prepareDummyProperties("TESTKEY", "123"));
         locationBuilder.append(File.pathSeparator);
         locationBuilder.append(prepareDummyProperties("TESTKEY1", "123"));
-        String jsonRepresentation = runner.getProperties(locationBuilder.toString());
-        Assert.assertEquals("{\"TESTKEY\":\"123\",\"TESTKEY1\":\"123\"}", jsonRepresentation);
+        String jsonRepresentation = adapter.getProperties(locationBuilder.toString());
+        Assert.assertEquals("{\"TESTKEY1\":\"123\",\"TESTKEY\":\"123\"}", jsonRepresentation);
     }
 
-    // TODO would be better to create the data without depending on test runner to do it.
+    // TODO would be better to create the data without depending on test adapter to do it.
     private void prepareDummyTestFile() throws IOException {
-        TestRunner runner = new TestRunner();
+        TestAdapter adapter = new TestAdapter();
         tempTestFile = File.createTempFile("Dummy", ".xls");
         String[] commands = new String[] {
                 "open(https://fictitious.com/fiction/display_company_profile.jsp)",
@@ -101,9 +106,9 @@ public class TestRunnerTest {
         String[] reformattedCommands = new String[commands.length];
         for (int i = 0; i < reformattedCommands.length; i++) {
             String comp = commands[i];
-            reformattedCommands[i] = reformatCommand(comp, runner);
+            reformattedCommands[i] = reformatCommand(comp, adapter);
         }
-        runner.writeFile(tempTestFile.getAbsolutePath(), reformattedCommands);
+        adapter.writeFile(tempTestFile.getAbsolutePath(), reformattedCommands);
     }
 
     private String prepareDummyProperties(String key, String value) throws IOException {
@@ -115,8 +120,8 @@ public class TestRunnerTest {
         return tempPropsFile.getAbsolutePath();
     }
 
-    private String reformatCommand(String comp, TestRunner runner) {
-        String[] tokenAndArgs = runner.getCommandTokenAndArgsAsArray(comp);
+    private String reformatCommand(String comp, TestAdapter adapter) {
+        String[] tokenAndArgs = adapter.getCommandTokenAndArgsAsArray(comp);
         return String.format("%s~%s~%s", tokenAndArgs[0], tokenAndArgs[1], ((tokenAndArgs[2] == null) ? "" : tokenAndArgs[2].trim()));
     }
 }

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.imaginea.brightest.Command;
-import com.imaginea.brightest.ExecutionContext;
 import com.imaginea.brightest.execution.CommandExecutor;
 import com.imaginea.brightest.util.Util;
 import com.thoughtworks.selenium.Selenium;
@@ -15,7 +14,6 @@ import com.thoughtworks.selenium.Selenium;
  */
 public class CommandBasedTest {
 	private final List<Command> commands = new ArrayList<Command>();
-    private CommandExecutor executor = null;
     private String id;
     private String suiteName;
     private String testType;
@@ -24,10 +22,7 @@ public class CommandBasedTest {
     private String tags;
     private String testName;
 
-    public void runTest(Selenium selenium) {
-        if (executor == null) {
-            executor = ExecutionContext.getInstance().getExecutor();
-        }
+    public void runTest(Selenium selenium, CommandExecutor executor) {
         for (Command command : commands) {
             executor.execute(command,selenium);
         }
@@ -43,10 +38,6 @@ public class CommandBasedTest {
 
     public int commandCount() {
         return commands.size();
-    }
-
-    public void setCommandExecutor(CommandExecutor executor) {
-        this.executor = executor;
     }
 
     public String getName() {

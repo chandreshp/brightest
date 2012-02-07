@@ -24,9 +24,6 @@
  */
 package com.imaginea.brightest.junit;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestListener;
@@ -42,41 +39,38 @@ import com.imaginea.brightest.format.FormatHandler;
 import com.imaginea.brightest.format.UnknownFormatException;
 import com.imaginea.brightest.test.CommandBasedTest;
 import com.imaginea.brightest.test.CommandBasedTestGroup;
+import com.imaginea.brightest.test.TestManager;
 
 /**
  * Manager for all tests, takes care of saving them, loading them and the other fun stuff.
  */
-public class JUnitTestManager {
+public class JUnitTestManager extends TestManager {
     private static final Log LOG = LogFactory.getLog(JUnitTestManager.class);
-    private final ExecutionContext context;
-    private List<FormatHandler> formatHandlers;
 
     public JUnitTestManager() {
         this(ExecutionContext.getInstance());
     }
 
     public JUnitTestManager(ExecutionContext context) {
-        this.context = context;
+        super(context);
     }
 
     public TestSuite loadSuite(String filePath) {
         TestSuite testSuite = new JUnitTestSuiteAdapter();
-        CommandBasedTestGroup suite = null;
-        for (FormatHandler formatHandler : getFormatHandlers()) {
-            suite = formatHandler.loadTestSuite(filePath);
-            if (suite != null) {
-                break;
-            }
-        }
-        if (suite == null) {
+        CommandBasedTestGroup testGroup = loadTestGroup(filePath);
+        if (testGroup == null) {
             throw new UnknownFormatException(filePath);
         } else {
-            for (CommandBasedTest test : suite.getTests()) {
+            for (CommandBasedTest test : testGroup.getTests()) {
                 JUnitTestCaseAdapter testCase = new JUnitTestCaseAdapter(test);
                 testSuite.addTest(testCase);
             }
         }
         return testSuite;
+    }
+
+    protected void resetFormatHandlers(FormatHandler formatHandler) {
+        super.resetFormatHandlers(formatHandler);
     }
 
     public TestResult runTest(ApplicationPreferences preferences) {
@@ -92,20 +86,6 @@ public class JUnitTestManager {
         } finally {
             context.stop();
         }
-    }
-
-    private List<FormatHandler> getFormatHandlers() {
-        if (this.formatHandlers == null) {
-            // we do not set the format handlers field, as we want all changes from context to be reflected
-            return context.getFormatHandlers();
-        } else {
-            return formatHandlers;
-        }
-    }
-
-    protected void resetFormatHandlers(FormatHandler formatHandler) {
-        this.formatHandlers = new ArrayList<FormatHandler>();
-        formatHandlers.add(formatHandler);
     }
 
     private void addResultListener(TestResult result) {

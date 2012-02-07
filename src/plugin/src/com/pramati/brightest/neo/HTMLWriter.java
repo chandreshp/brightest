@@ -45,6 +45,10 @@ public class HTMLWriter extends AbstractWriter {
         this.outputFileName = filePath;
     }
 
+    public void writeCommands(String[] rawCommands) {
+        throw new UnsupportedOperationException("HTMLWriter does not support writing commands ");
+    }
+
     protected void addResults(HSSFWorkbook workBook, ResultInfo resultInfo) {
         super.addResults(workBook, resultInfo);
     }

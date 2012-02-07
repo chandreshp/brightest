@@ -44,7 +44,7 @@ public class XLSFormatHandlerTest {
                 "type(//input[@id='email']| apurba.n@imaginea.com)",
                 "type(//input[@id='email'],apurba.n@imaginea.com)",
                 "type( //input[@id='email'] , apurba.n@imaginea.com)", };
-        XLSFormatHandler.CommandRow cmdRow = new XLSFormatHandler.CommandRow();
+        CommandRow cmdRow = new XLSFormatHandler.XLSCommandRow();
         for (String value : values) {
             Command command = cmdRow.parse(value);
             Assert.assertEquals("type", command.getName());
@@ -56,7 +56,7 @@ public class XLSFormatHandlerTest {
     @Test
     public void parseCommandEmptyString() {
         String[] values = new String[] { "type()", "type(       )" };
-        XLSFormatHandler.CommandRow cmdRow = new XLSFormatHandler.CommandRow();
+        CommandRow cmdRow = new XLSFormatHandler.XLSCommandRow();
         for (String value : values) {
             Command command = cmdRow.parse(value);
             Assert.assertEquals("type", command.getName());

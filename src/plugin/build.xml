@@ -5,12 +5,12 @@
 	<property name="src.dir" value="${basedir}/src"/>
 	<property name="selenium.dir" value="${basedir}/selenium-resources"/>
     
-	<property name="bt.java.dir" value="${basedir}/../core" />
-	<property name="bt.src.dir" value="${bt.java.dir}/src" />
-	<property name="bt.lib.dir" value="${basedir}/../../lib" />
+	<property name="core.java.dir" value="${basedir}/../core" />
+	<property name="core.src.dir" value="${core.java.dir}/src" />
+	<property name="core.lib.dir" value="${basedir}/../../lib" />
 
 	
-    <property name="lib.dir" value="${bt.lib.dir}"/>
+    <property name="lib.dir" value="${core.lib.dir}"/>
 	<property name="staging.dir" value="${basedir}/dist"/>
     <property name="classes.dir" value="${staging.dir}/classes"/>
 	
@@ -41,10 +41,17 @@
     
     <target name="init">
     	<mkdir dir="${staging.dir}"/>
-        <path id="compile.class.path">
+        <path id="core.compile.class.path">
      	    <fileset dir="${lib.dir}">
     	        <include name="**/*.jar"/>
             </fileset>
+        </path>
+        <path id="compile.class.path">
+     	    <fileset dir="${lib.dir}">
+    	        <include name="**/poi*.jar"/>
+    	        <include name="**/junit*.jar"/>
+            </fileset>
+     	    <path location="${classes.dir}" />
         </path>
 
     </target>
@@ -52,7 +59,7 @@
     <!-- compile -->
     <target name="compile" depends="init">
     	<mkdir dir="${classes.dir}"/>
-        <javac srcdir="${bt.src.dir}" destdir="${classes.dir}" classpathref="compile.class.path" nowarn="yes" debug="yes">
+        <javac srcdir="${core.src.dir}" destdir="${classes.dir}" classpathref="core.compile.class.path" nowarn="yes" debug="yes">
             <!-- <compilerarg value="-Xlint:unchecked"/> -->
         </javac>
         <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="compile.class.path" nowarn="yes" debug="yes">
@@ -171,5 +178,29 @@
 		<delete dir="${staging.dir}" />
 	</target>
     
+	<target name="junit-plugin" depends="compile">
+      <property name="test.classes.dir" value="${staging.dir}/test-classes" />
+      <property name="test.src.dir" value="${basedir}/test" />
+
+      <mkdir dir="${test.classes.dir}" />
+      <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" classpathref="compile.class.path" nowarn="yes" debug="yes">
+        <!-- <compilerarg value="-Xlint:unchecked"/> -->
+      </javac>
+
+      <path id="run.test.class.path">
+        <path refid="compile.class.path" />
+        <path location="${test.classes.dir}" />
+      </path>
+
+      <junit printsummary="on" fork="false" haltonfailure="no" showoutput="true">
+        <classpath refid="run.test.class.path">
+        </classpath>
+        <batchtest >
+          <fileset dir="${test.src.dir}">
+            <include name="**/*.java" />
+          </fileset>
+        </batchtest>			
+      </junit>
+	</target>
 
 </project>

@@ -38,15 +38,23 @@ com.imaginea.Util = {
 
 //AN: additions for Brightest
 var FormatterAddons = {
+    clazzName: "com.pramati.brightest.neo.TestAdapter",
 	cl : null,
 	
     getTestSuite : function(filePath) {
         try{
-            var aClass = java.lang.Class.forName("com.pramati.brightest.neo.TestRunner", true, FormatterAddons.cl);
+            var aClass = java.lang.Class.forName(FormatterAddons.clazzName, true, FormatterAddons.cl);
             var myObj = aClass.newInstance();
+            var i = 0;
             myObj.processFile(filePath);
             while (myObj.isProcessed() === false) {
+                console.log("still waiting "+ new Date());
                 myObj.isProcessed();//can't have an empty block!
+                i++;
+                if ( i > 3) {
+                    alert("Problems in loading the test script");
+                    return null;
+                }
             }
             var jsSnippet = myObj.getJavascriptConstructForTestSuite();
             var testArtifact = eval("("+jsSnippet+")");
@@ -57,7 +65,7 @@ var FormatterAddons = {
     },
     writeCommands : function(filePath, rawCommands) {
 	    try{
-            var aClass = java.lang.Class.forName("com.pramati.brightest.neo.TestRunner", true, FormatterAddons.cl);
+            var aClass = java.lang.Class.forName(FormatterAddons.clazzName, true, FormatterAddons.cl);
             var myObj = aClass.newInstance();
             myObj.writeFile(filePath, rawCommands);
 	    }catch(e) {
@@ -66,7 +74,7 @@ var FormatterAddons = {
     },
     saveResults : function(filePath, rawResults) {
 	    try{
-            var aClass = java.lang.Class.forName("com.pramati.brightest.neo.TestRunner", true, FormatterAddons.cl);
+            var aClass = java.lang.Class.forName(FormatterAddons.clazzName, true, FormatterAddons.cl);
             var myObj = aClass.newInstance();
             myObj.writeResults(filePath, rawResults);
 	    }catch(e) {
@@ -302,7 +310,7 @@ Components.utils.import("resource://gre/modules/AddonManager.jsm");
         var testArtifact;
         
 	    //AN: hack for xls files
-        if (filePath.indexOf(".xls") > 0) {
+        if (filePath.indexOf(".xls") > 0 || filePath.indexOf(".csv") > 0) {
             var commands = [];
 		    this.log.debug("using java to read =" + filePath);
             //xls files always contain a suite, even if it contains a single test case

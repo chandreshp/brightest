@@ -35,7 +35,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 /**
- * @author apurba
+ * Writes csv
  */
 public class CSVWriter extends AbstractWriter {
     private final String outputFileName;
@@ -49,6 +49,9 @@ public class CSVWriter extends AbstractWriter {
     protected void addResults(HSSFWorkbook workBook, ResultInfo resultInfo) {
         this.resultInfo = resultInfo;
         super.addResults(workBook, resultInfo);
+    }
+
+    public void writeCommands(String[] rawCommands) {
     }
 
     protected void write(HSSFWorkbook workBook) {
