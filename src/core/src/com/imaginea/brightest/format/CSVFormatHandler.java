@@ -77,24 +77,24 @@ public class CSVFormatHandler extends FormatHandler {
             super(fileName, delimiter, charset);
             this.fileName = fileName;
             csvTable = new Hashtable<Integer, ArrayList<String>>();
-            this.storeData();
+            this.readData();
         }
 
         public TestCaseCsv(String fileName, char delimiter) throws FileNotFoundException {
             super(fileName, delimiter);
             this.fileName = fileName;
             csvTable = new Hashtable<Integer, ArrayList<String>>();
-            this.storeData();
+            this.readData();
         }
 
         public TestCaseCsv(String fileName) throws FileNotFoundException {
             super(fileName);
             this.fileName = fileName;
             csvTable = new Hashtable<Integer, ArrayList<String>>();
-            this.storeData();
+            this.readData();
         }
 
-        private void storeData() {
+        private void readData() {
             try {
                 for (row = 0; super.readRecord(); row++) {
                     columns = new ArrayList<String>();

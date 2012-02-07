@@ -25,7 +25,11 @@
 package com.pramati.brightest.neo;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -80,6 +84,31 @@ public abstract class AbstractWriter implements Writer {
                 }
             }
         }
+    }
+
+    protected String formatRawCommand(String rawCommand) {
+        String[] splits = rawCommand.split("~");
+        String formattedCommand = "";
+        // TODO hack alert, correct this, we should not be using such string tokens
+        switch (splits.length) {
+            case 1:
+                formattedCommand = String.format("%s()", splits[0]);
+                break;
+            case 2:
+                formattedCommand = String.format("%s(%s)", splits[0], splits[1]);
+                break;
+            case 3:
+                if (splits[2] == null || splits[2].trim().length() == 0) {
+                    formattedCommand = String.format("%s(%s)", splits[0], splits[1]);
+                } else {
+                    splits[2] = splits[2].trim();
+                    formattedCommand = String.format("%s(%s, %s)", splits[0], splits[1], splits[2]);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("We can not understand " + rawCommand + " with our current logic");
+        }
+        return formattedCommand;
     }
 
     /*
@@ -159,4 +188,28 @@ public abstract class AbstractWriter implements Writer {
     }
 
     protected abstract void write(HSSFWorkbook workBook);
+
+    protected static interface WritingTemplate {
+        public void doWithStream(OutputStream outputStream) throws IOException;
+    }
+
+    protected void writeToFile(WritingTemplate template, String outputFileName) {
+        OutputStream outputStream = null;
+        try {
+            outputStream = new BufferedOutputStream(new FileOutputStream(outputFileName));
+            template.doWithStream(outputStream);
+            outputStream.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            } catch (IOException exc) {
+                // ignoring the exception with just logging as we were unable to close the stream
+                exc.printStackTrace();
+            }
+        }
+    }
 }

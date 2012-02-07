@@ -24,8 +24,6 @@
  */
 package com.pramati.brightest.neo;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -38,8 +36,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
  * Writes csv
  */
 public class CSVWriter extends AbstractWriter {
+    private static final String DELIMITER = "~";
     private final String outputFileName;
-    private OutputStream outputStream = null;
     private ResultInfo resultInfo;
 
     public CSVWriter(String filePath) {
@@ -52,47 +50,64 @@ public class CSVWriter extends AbstractWriter {
     }
 
     public void writeCommands(String[] rawCommands) {
+        final StringBuilder testContents = new StringBuilder();
+        addTestCase(rawCommands, testContents);
+        writeToFile(new WritingTemplate() {
+            @Override
+            public void doWithStream(OutputStream outputStream) throws IOException {
+                outputStream.write(testContents.toString().getBytes());
+            }
+        }, outputFileName);
     }
 
-    protected void write(HSSFWorkbook workBook) {
-        try {
-            outputStream = new BufferedOutputStream(new FileOutputStream(outputFileName));
-            StringBuilder results = new StringBuilder();
-            int totalSheets = (resultInfo.failureStep > -1) ? 2 : 1;
-            for (int i = 0; i < totalSheets; i++) {
-                HSSFSheet sheet = workBook.getSheetAt(i);
-                for (int j = 0; j <= sheet.getLastRowNum(); j++) {
-                    HSSFRow row = sheet.getRow(j);
-                    if (row != null) {
-                        StringBuilder lineBuilder = new StringBuilder();
-                        for (short k = 0; k <= row.getLastCellNum(); k++) {
-                            @SuppressWarnings("deprecation")
-                            HSSFCell cell = row.getCell(k);
-                            if (cell != null) {
-                                lineBuilder.append(getCellValue(cell)).append(",");
+    private String addTestCase(String[] rawCommands, StringBuilder testContents) {
+        addRowWithContent(new String[] { "Purpose", "Steps" }, testContents);
+        for (int i = 0; i < rawCommands.length; i++) {
+            String formattedCommand = formatRawCommand(rawCommands[i]);
+            addRowWithContent(new String[] { "", formattedCommand }, testContents);
+        }
+        return testContents.toString();
+    }
+
+    private void addRowWithContent(String[] columns, StringBuilder testContents) {
+        for (String column : columns) {
+            testContents.append(column);
+            testContents.append(DELIMITER);
+        }
+        // eat away the last character
+        testContents.deleteCharAt(testContents.length() - 1);
+        testContents.append("\n");
+    }
+
+    protected void write(final HSSFWorkbook workBook) {
+        writeToFile(new WritingTemplate(){
+
+            @Override
+            public void doWithStream(OutputStream outputStream) throws IOException {
+                StringBuilder results = new StringBuilder();
+                int totalSheets = (resultInfo.failureStep > -1) ? 2 : 1;
+                for (int i = 0; i < totalSheets; i++) {
+                    HSSFSheet sheet = workBook.getSheetAt(i);
+                    for (int j = 0; j <= sheet.getLastRowNum(); j++) {
+                        HSSFRow row = sheet.getRow(j);
+                        if (row != null) {
+                            StringBuilder lineBuilder = new StringBuilder();
+                            for (short k = 0; k <= row.getLastCellNum(); k++) {
+                                @SuppressWarnings("deprecation")
+                                HSSFCell cell = row.getCell(k);
+                                if (cell != null) {
+                                    lineBuilder.append(getCellValue(cell)).append(",");
+                                }
                             }
-                        }
-                        if (lineBuilder.toString().matches("(,)+") == false) {
-                            results.append(lineBuilder.toString()).append("\n");
+                            if (lineBuilder.toString().matches("(,)+") == false) {
+                                results.append(lineBuilder.toString()).append("\n");
+                            }
                         }
                     }
                 }
+                outputStream.write(results.toString().getBytes());
             }
-            System.out.println(results.toString());
-            outputStream.write(results.toString().getBytes());
-            outputStream.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-            } catch (IOException exc) {
-                // ignoring the exception with just locking as we were unable to close the stream, nothing more
-                // dangerous
-                exc.printStackTrace();
-            }
-        }
+        }, outputFileName);
     }
+
 }

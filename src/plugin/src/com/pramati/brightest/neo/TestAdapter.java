@@ -112,9 +112,13 @@ public class TestAdapter {
         processor.start();
     }
 
-    public void writeFile(String filePath, String[] rawCommands) {
-        ExcelWriter writer = new ExcelWriter(filePath);
-        writer.writeCommands(rawCommands);
+    public void writeFile(String filePath, final String[] rawCommands) {
+        final Writer writer = getWriter(filePath);
+        new Thread(new Runnable() {
+            public void run() {
+                writer.writeCommands(rawCommands);
+            }
+        }).start();
     }
 
     public void writeResults(String filePath, final String[] rawResults) {

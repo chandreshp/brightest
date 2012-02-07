@@ -25,10 +25,8 @@
 package com.pramati.brightest.neo;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
@@ -46,7 +44,6 @@ import org.apache.poi.hssf.util.HSSFColor;
  */
 public class ExcelWriter extends AbstractWriter {
     private final String outputFileName;
-    private OutputStream outputStream = null;
 
     /**
      * Constructor used to set destination filename
@@ -93,48 +90,23 @@ public class ExcelWriter extends AbstractWriter {
 
     private void addTestCase(String[] rawCommands, HSSFWorkbook workBook) {
         HSSFSheet testCaseSheet = workBook.createSheet("TestCase");
-        addRowWithContent(testCaseSheet.createRow(0), new String[] { "Purpose", "Steps" });
+        addRowWithContent(new String[] { "Purpose", "Steps" }, testCaseSheet.createRow(0));
         for (int i = 0; i < rawCommands.length; i++) {
             String formattedCommand = formatRawCommand(rawCommands[i]);
-            addRowWithContent(testCaseSheet.createRow(i + 1), new String[] { "", formattedCommand });
+            addRowWithContent(new String[] { "", formattedCommand }, testCaseSheet.createRow(i + 1));
         }
-    }
-
-    protected String formatRawCommand(String rawCommand) {
-        String[] splits = rawCommand.split("~");
-        String formattedCommand = "";
-        // TODO hack alert, correct this, we should not be using such string tokens
-        switch (splits.length) {
-            case 1:
-                formattedCommand = String.format("%s()", splits[0]);
-                break;
-            case 2:
-                formattedCommand = String.format("%s(%s)", splits[0], splits[1]);
-                break;
-            case 3:
-                if (splits[2] == null || splits[2].trim().length() == 0) {
-                    formattedCommand = String.format("%s(%s)", splits[0], splits[1]);
-                } else {
-                    splits[2] = splits[2].trim();
-                    formattedCommand = String.format("%s(%s, %s)", splits[0], splits[1], splits[2]);
-                }
-                break;
-            default:
-                throw new IllegalArgumentException("We can not understand " + rawCommand + " with our current logic");
-        }
-        return formattedCommand;
     }
 
     private void addTestScript(HSSFSheet outputFileWorkSheet, HSSFCellStyle style, HSSFFont font) {
         String[] scriptHeaders = { "Test id", "Type", "Description", "Expected Result", "Worksheet", "Tags" };
         HSSFRow headerRow = outputFileWorkSheet.createRow(0);
         setHeaderRowStyle(headerRow, style, font);
-        addRowWithContent(headerRow, scriptHeaders);
+        addRowWithContent(scriptHeaders, headerRow);
         HSSFRow bodyRow = outputFileWorkSheet.createRow(1);
-        addRowWithContent(bodyRow, new String[] { "1", "AUTO", "", "", "TestCase", "" });
+        addRowWithContent(new String[] { "1", "AUTO", "", "", "TestCase", "" }, bodyRow);
     }
 
-    private void addRowWithContent(HSSFRow row, String[] rowData) {
+    private void addRowWithContent(String[] rowData, HSSFRow row) {
         for (int i = 0; i < rowData.length; i++) {
             String headerData = rowData[i];
             addCellWithContent(row, i, headerData);
@@ -164,24 +136,13 @@ public class ExcelWriter extends AbstractWriter {
      * 
      * @param workBook workbook associated with the destination file
      */
-    protected void write(HSSFWorkbook workBook) {
-        try {
-            outputStream = new BufferedOutputStream(new FileOutputStream(outputFileName));
-            workBook.write(outputStream);
-            outputStream.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-            } catch (IOException exc) {
-                // ignoring the exception with just logging as we were unable to close the stream, nothing more
-                // dangerous
-                exc.printStackTrace();
+    protected void write(final HSSFWorkbook workBook) {
+        writeToFile(new WritingTemplate() {
+            @Override
+            public void doWithStream(OutputStream outputStream) throws IOException {
+                workBook.write(outputStream);
             }
-        }
+        }, outputFileName);
     }
 
     /**

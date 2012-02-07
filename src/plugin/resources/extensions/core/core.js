@@ -51,8 +51,8 @@ var FormatterAddons = {
                 console.log("still waiting "+ new Date());
                 myObj.isProcessed();//can't have an empty block!
                 i++;
-                if ( i > 3) {
-                    alert("Problems in loading the test script");
+                if ( i > 10) {
+                    alert("Timed out while trying to load the file, please try again");
                     return null;
                 }
             }
@@ -236,7 +236,7 @@ ResultHistory.prototype = {
     var extensionPath = null;
     var extensionFileUrl = "";
     function addPolicies() {
-        var jarArray = ["javaFirefoxExtensionUtils.jar", "test-runner.jar","poi-3.2.jar","junit-4.8.2.jar" ];
+        var jarArray = ["javaFirefoxExtensionUtils.jar", "test-runner.jar","poi-3.2.jar","junit-4.8.2.jar", "javacsv.jar" ];
         var i,urlArray = [];
         for (i = 0; i < jarArray.length; i++) {
             urlArray[i] = new java.net.URL(extensionFileUrl + jarArray[i]);
@@ -355,7 +355,7 @@ Components.utils.import("resource://gre/modules/AddonManager.jsm");
 			    var filePath = file.path?file.path.toString():"";
 			    
 			    //AN: hack for xls files
-			    if (filePath.indexOf(".xls") > 0 || (filePath.indexOf(".html") > 0  && exportTest)) {
+			    if (filePath.indexOf(".xls") > 0 || (filePath.indexOf(".html") > 0  && exportTest) || filePath.indexOf(".csv") > 0) {
 				    this.log.debug("using java to write =" + filePath);
 				    var rawCommands = [];
 				    var commands = testCase.commands;

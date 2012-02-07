@@ -50,6 +50,7 @@
      	    <fileset dir="${lib.dir}">
     	        <include name="**/poi*.jar"/>
     	        <include name="**/junit*.jar"/>
+    	        <include name="**/javacsv.jar"/>
             </fileset>
      	    <path location="${classes.dir}" />
         </path>
@@ -162,6 +163,9 @@
             </fileset>
             <fileset dir="${lib.dir}">
                 <include name="**/junit-4.8.2.jar"/>
+            </fileset>
+            <fileset dir="${lib.dir}">
+                <include name="**/javacsv.jar"/>
             </fileset>
 		</copy>    	
     </target>
