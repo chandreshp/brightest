@@ -1,3 +1,4 @@
+
 com.imaginea.DSLManager = function (editor) {
     this.editor = editor;
     this.commandStack = [];
@@ -48,7 +49,7 @@ com.imaginea.DSLManager.prototype = {
             if (file.exists) {
                 var text = FileUtils.readFile(file);
                 try {
-                    this.commandStack = eval(text);
+                    this.commandStack = JSON.parse(text);
                     if (this.commandStack === null) {
                         this.commandStack = [];
                     }
@@ -70,7 +71,7 @@ com.imaginea.DSLManager.prototype = {
                 var file = FileUtils.getFile(filename);
                 if (file.exists) {
                     var stream = FileUtils.openFileOutputStream(file);
-                    var text = JSON.stringify(this.commandStack);
+                    var text = JSON.stringify(this.commandStack, null, 4);
 	                var conv = FileUtils.getUnicodeConverter('UTF-8');
 
 	                text = conv.ConvertFromUnicode(text);

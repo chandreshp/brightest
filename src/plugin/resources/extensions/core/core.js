@@ -51,7 +51,7 @@ var FormatterAddons = {
                 console.log("still waiting "+ new Date());
                 myObj.isProcessed();//can't have an empty block!
                 i++;
-                if ( i > 10) {
+                if ( i > 20) {
                     alert("Timed out while trying to load the file, please try again");
                     return null;
                 }
