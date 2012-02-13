@@ -92,7 +92,7 @@
             </fileset>
         </jar>
     </target>
-    
+ <!-- AN: commented out the make plugins for brightest section as this is not yet functional   
     <target name="make-plugin-xpis-dev" description="Builds the XPIs of all associated plugins for development">
         <ac:for param="dir">
             <path>
@@ -124,8 +124,9 @@
             </sequential>
         </ac:for>
     </target>
-    
-    <target name="make-plugin-xpis" description="Builds the XPIs of all associated plugins" depends="make-plugin-xpis-dev">
+-->    
+    <target name="make-plugin-xpis" description="Builds the XPIs of all associated plugins" >
+<!-- AN: commented out since we do not have this well thought out yet
         <ac:for param="dir">
             <path>
             <dirset dir="${plugins.dir}" includes="*"/>
@@ -138,9 +139,10 @@
                 </jar>
             </sequential>
         </ac:for>
+-->
     </target>
 
-    <target name="make-xpi-dev" depends="makexpi-struct, make-plugin-xpis-dev" description="Builds the xpi for development">
+    <target name="make-xpi-dev" depends="makexpi-struct" description="Builds the xpi for development">
     </target>
 
     <target name="makexpi-struct" depends="init, jar, selenium-jar, brightest-ide-jar">
@@ -148,18 +150,24 @@
     	<mkdir dir="${xpi.chrome.dir}"/>
 		<copy todir="${xpi.dir}">
             <fileset dir="${src.resources.dir}">
-                <include name="**/*.*"/>
-                <exclude name="content/*.*"/>
+                <include name="chrome.manifest"/>
+                <include name="install.rdf"/>
+                <include name="components/*.*"/>
             </fileset>
 		</copy>    	
 		<copy todir="${xpi.chrome.dir}">
             <fileset dir="${staging.dir}">
                 <include name="*.jar"/>
+                <exclude name="${app.jar}"/>
             </fileset>
 		</copy>    	
 		<copy todir="${xpi.java.dir}">
             <fileset dir="${staging.dir}">
                 <include name="${app.jar}"/>
+            </fileset>
+            <fileset dir="${src.resources.dir}/java">
+                <include name="poi-3.2.jar"/>
+                <include name="javaFirefoxExtensionUtils.jar"/>
             </fileset>
             <fileset dir="${lib.dir}">
                 <include name="**/junit-4.8.2.jar"/>

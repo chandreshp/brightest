@@ -162,8 +162,6 @@ Editor.controller = {
 		case "cmd_selenium_step":
 		case "cmd_selenium_testrunner":
         case "cmd_selenium_rollup":
-        case "cmd_export_results":
-        case "cmd_analyze_tests":
 			return true;
 		default:
 			return false;
@@ -202,7 +200,7 @@ Editor.controller = {
 	doCommand : function(cmd) {
 		//AN: in case the window is closed like switching from main window to sidebar we may get a null Editor
 		if (Editor) {
-			Editor.log.debug("doCommand: " + cmd);
+			Editor.log.info("doCommand: " + cmd);
 		}
 		switch (cmd) {
 		case "cmd_close": if (editor.confirmClose()) { window.close(); } break;

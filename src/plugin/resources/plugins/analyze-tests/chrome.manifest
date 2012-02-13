@@ -1,6 +1,0 @@
-# chrome.manifest to be used when packaged into xpi archive
-
-content	test-analyze-extensions jar:chrome/analyze-tests.jar!/content/ xpcnativewrappers=yes
-
-overlay	chrome://selenium-ide/content/selenium-ide-sidebar.xul 	chrome://test-analyze-extensions/content/tools-menu-analyze-tests-overlay.xul
-overlay	chrome://selenium-ide/content/selenium-ide.xul 	chrome://test-analyze-extensions/content/tools-menu-analyze-tests-overlay.xul

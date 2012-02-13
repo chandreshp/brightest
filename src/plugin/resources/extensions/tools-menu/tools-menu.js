@@ -5,6 +5,15 @@ Editor.controller.doCommand = (function(){
             case "cmd_export_results":
                 editor.app.saveResults();
                 break;
+            case "cmd_save_as":
+                editor.app.saveNewTestSuite();
+                break;
+            case "cmd_show_dsl_manager":
+                editor.getDSLManager().show();
+                break;
+            case "cmd_show_locators":
+                editor.app.showLocators();
+                break;
             default:
                 ref.apply(this,arguments);
         }
@@ -16,16 +25,28 @@ Editor.controller.isCommandEnabled = (function(){
     return function(cmd){
         if(cmd==="cmd_export_results"){
             return true;
-        }else{
+        } else if(cmd==="cmd_save_as"){
+            return true;
+        } else if(cmd==="cmd_show_dsl_manager"){
+            return false;
+        } else if(cmd==="cmd_show_locators"){
+            return true;
+        } else{
             return ref.apply(this,arguments);
         }
     };
 }());
 
-Editor.controller.supportCommand = (function(){
-    var ref = Editor.controller.supportCommand;
+Editor.controller.supportsCommand = (function(){
+    var ref = Editor.controller.supportsCommand;
     return function(cmd){
         if(cmd==="cmd_export_results"){
+            return true;
+        } else if(cmd==="cmd_save_as"){
+            return true;
+        } else if(cmd==="cmd_show_dsl_manager"){
+            return true;
+        }  else if(cmd==="cmd_show_locators"){
             return true;
         }else{
             return ref.apply(this,arguments);
@@ -63,7 +84,7 @@ Format.prototype.saveResults = function(file, selResults) {
         //alert("resutStr = " + rawResult);
         rawResults.push(rawResult);
     });
-	this.log.debug("saving resuls: file=" + filePath + " and results " + rawResults.join("\n\n"));
+	this.log.debug("saving results: file=" + filePath + " and results " + rawResults.join("\n\n"));
     FormatterAddons.saveResults(filePath, rawResults);
     rawResults.shift();
     if (/(.)+.html/.test(filePath)) {
@@ -76,3 +97,14 @@ Format.prototype.saveResults = function(file, selResults) {
         }
     }
 };
+
+//Extend Application for showing Locators
+Application.prototype.showLocators = function() {
+    this.log.info("Show Locators");
+    var extensionInfo = "brighTest@imaginea.com";
+    try{
+        window.open("chrome://"+extensionInfo+"/content/locator-dialog.xul", "toolsMenu","chrome,centerscreen");
+    } catch(error) {
+        this.log.error(error);
+    }
+}

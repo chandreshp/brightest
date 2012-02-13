@@ -11,18 +11,26 @@
   <!--Adding commands to commandSet-->
   <commandset id="seleniumIDECommands">
     <command id="cmd_export_results" oncommand="goDoCommand('cmd_export_results')"/>
+    <command id="cmd_save_as" oncommand="goDoCommand('cmd_save_as')"/>
+    <command id="cmd_show_locators" oncommand="goDoCommand('cmd_show_locators')"/>
+    <command id="cmd_show_dsl_manager" oncommand="goDoCommand('cmd_show_dsl_manager')"/>
   </commandset>
   
-  <menu id="toolsMenu" label="Tools" accesskey="X">
-    <menupopup id="toolsMenuPopup">
-	    <menuitem label="Export Results" command="cmd_export_results"/>
-		<menupopup id="popup_export_formats" onpopupshowing="window.editor.populateFormatsPopup(this)" oncommand="window.editor.exportTestCaseWithFormat(window.editor.app.getFormats().selectFormat(event.target.getAttribute('value')))">
-		</menupopup>
-    </menupopup>
-  </menu>
-  
+  <menupopup id="file-popup">
+    <menuitem label="Save As" command="cmd_save_as" />
+  </menupopup>
+
   <menubar id="menubar">
     <menu id="toolsMenu" insertafter="menu_edit"/>
   </menubar>
 
-</overlay>
+  <menu id="toolsMenu" label="Tools" accesskey="X">
+    <menupopup id="toolsMenuPopup">
+	    <menuitem label="Export Results" command="cmd_export_results"/>
+	    <menuitem label="Show Locators" command="cmd_show_locators"/>
+	    <menuitem label="Show DSL Manager" command="cmd_show_dsl_manager"/>
+    </menupopup>
+  </menu>
+  
+
+</overlay> 

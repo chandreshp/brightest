@@ -84,6 +84,9 @@ com.imaginea.DSLManager.prototype = {
                 }
             }
         }
+    },
+    show: function() {
+        
     }
 };
 
