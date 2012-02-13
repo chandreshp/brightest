@@ -28,7 +28,7 @@ Editor.controller.isCommandEnabled = (function(){
         } else if(cmd==="cmd_save_as"){
             return true;
         } else if(cmd==="cmd_show_dsl_manager"){
-            return false;
+            return true;
         } else if(cmd==="cmd_show_locators"){
             return true;
         } else{
@@ -100,11 +100,13 @@ Format.prototype.saveResults = function(file, selResults) {
 
 //Extend Application for showing Locators
 Application.prototype.showLocators = function() {
-    this.log.info("Show Locators");
-    var extensionInfo = "brighTest@imaginea.com";
     try{
-        window.open("chrome://"+extensionInfo+"/content/locator-dialog.xul", "toolsMenu","chrome,centerscreen");
+        window.openDialog("chrome://brightest-ide-extensions/content/tools-menu/locator-dialog.xul", "toolsMenu","chrome,modal", LocatorBuilders, editor, this.log);
     } catch(error) {
         this.log.error(error);
     }
+}
+
+com.imaginea.DSLManager.prototype.show = function() {
+        window.openDialog("chrome://brightest-ide-extensions/content/tools-menu/dsl-manager-dialog.xul", "toolsMenu","chrome,modal", editor, editor.app.log);
 }

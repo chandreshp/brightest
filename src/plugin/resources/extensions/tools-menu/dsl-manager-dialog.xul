@@ -1,0 +1,24 @@
+<?xml-stylesheet href="chrome://global/skin" type="text/css"?>
+ 
+<!DOCTYPE window [
+<!ENTITY % browserDTD SYSTEM "chrome://browser/locale/browser.dtd">
+%browserDTD;
+<!ENTITY % seleniumIdeDTD SYSTEM "chrome://selenium-ide/locale/selenium-ide.dtd">
+%seleniumIdeDTD;
+]>
+
+<dialog id="locator-dialog"
+  title="Locators"
+  buttons="accept,cancel"
+  ondialogaccept="return DSLManagerDialog.acceptChanges();"
+  ondialogcancel="return DSLManagerDialog.cancelChanges();"
+  onload="DSLManagerDialog.create();"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script type="application/x-javascript" src="chrome://brightest-ide-extensions/content/tools-menu/dslManagerDialog.js"/>
+  <vbox flex="1">
+    <description>Modify the dsl commands and press ok to save
+    <hbox>
+      <listbox id="dslBuilder-list" flex="1"/>
+    </hbox>
+  </vbox>
+</dialog>
