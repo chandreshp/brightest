@@ -196,7 +196,7 @@ public class DiscoveryService {
         }
 
         public List<Class<?>> getClassesWithFilter(String pathElement, String packageName) {
-            packageName = packageName.replaceAll("\\.", File.separator);
+            packageName = packageName.replace(".", File.separator);
             List<Class<?>> classList = new ArrayList<Class<?>>();
             File rootFolder = new File(pathElement);
             RecursiveFinder finder = new RecursiveFinder(packageName);
